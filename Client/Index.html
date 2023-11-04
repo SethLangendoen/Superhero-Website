@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Superhero Information</title>
+</head>
+
+
+<body>
+  <h1>Superhero Information</h1>
+  <input type="number" id="superheroId" placeholder="Enter Superhero ID">
+
+  <button id = "getSuperHeroInfo">Get Info</button>
+  <div id="superheroInfo"></div>
+  <div id = "superheroPowers"></div>
+
+  <!-- for front-end 1 -->
+  <label for="searchBy">Search By:</label>
+  <select id="searchBy">
+    <option value="name">name</option>
+    <option value="Race">race</option>
+    <option value="Publisher">publisher</option>
+    <option value="power">power</option>
+  </select>
+
+  <input placeholder="Enter value here" id = 'inputValue'>
+  <input placeholder = "n superheros to appear" id = nValue>
+  <button id="searchByButton">Search</button>
+  <div id = 'superheroSearched'></div>
+
+
+  <!-- Content for lists -->
+
+
+
+
+  <div>
+    <p>Create New List</p>
+    <input placeholder="New list name" id = 'listName'>
+    <button id = 'createListButton'>Create List</button>
+    <div id = 'resultDiv'></div>
+
+    <label for="GeneratedLists">Select List: </label>
+    <select id="GeneratedLists">
+
+
+
+    </select>
+
+  </div>
+
+
+
+  <script src="main.js"></script>
+</body>
+
+</html>
