@@ -6,5 +6,13 @@
   {
     "listname": "hero",
     "superheroes": []
+  },
+  {
+    "listname": "heros",
+    "superheroes": []
+  },
+  {
+    "listname": "zers",
+    "superheroes": []
   }
 ]

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const createListButton = document.getElementById('createListButton'); 
   const resultDiv = document.getElementById('resultDiv'); 
   const select = document.getElementById('GeneratedLists')
+  const addSuperhero = document.getElementById('addSuperhero')
 
   getInfoButton.addEventListener('click', () => {
     const superheroId = document.getElementById('superheroId').value;
@@ -172,8 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Stuff for the lists
 
 
-
-
 createListButton.addEventListener('click', function(){
   const newListName = document.getElementById('listName'); 
   const listName = newListName.value; 
@@ -185,6 +184,9 @@ createListButton.addEventListener('click', function(){
       'Content-Type': 'application/json',
     },
   })
+
+  
+    // this needs to be relative to the json file...
     .then((response) => response.json())
     .then((data) => {
       resultDiv.innerHTML = `List created with name: ${data.listname}`;
@@ -196,7 +198,7 @@ createListButton.addEventListener('click', function(){
 
 
     // to update the options in GeneratedLists: 
-
+    
 
 
 

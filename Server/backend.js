@@ -102,14 +102,6 @@ app.get('/search_superhero_ids/:field/:pattern/:n', (req, res) => {
     });
   }
 
-
-  // const matchingSuperheroes = superheroData.filter((hero) => {
-  //   if (hero[pattern] && hero[pattern].toLowerCase().includes(field.toLowerCase())) {
-  //     return true;
-  //   }
-  //   return false;
-  // });
-
   const results = n ? matchingSuperheroes.slice(0, n) : matchingSuperheroes;
 
   // If it's the power field, map the "hero_names" to "id" from the other JSON file
@@ -128,11 +120,6 @@ app.get('/search_superhero_ids/:field/:pattern/:n', (req, res) => {
   }
 });
 
-// function isPowerField(pattern) {
-//   // Check if the specified field exists in the first object of superheroPowerData
-//   const firstObject = superheroPowerData[0];
-//   return firstObject.hasOwnProperty(pattern);
-// }
 
 
 
@@ -275,7 +262,80 @@ app.post('/create_list/:listname', (req, res) => {
 
 
 
+// Add items to a list in the json file
+app.post('/add_ids_to_list/:listname/:ids', (req, res) => {
+  const {listname, ids} = req.params;
+  // Check if the listname exists
+  const existingList = listData.find((list) => list.listname === listname);
+  if (existingList) {
+    existingList["superheroes"] = ids; // set the new id's in that list
+  } else {
+    return res.status(400).json({ error: 'No list found' });
+  }
+  // Save the updated data to the lists.json file
+  fs.writeFileSync('lists.json', JSON.stringify(listData, null, 2));
+  res.json(existingList);
+});
 
+
+
+// Get id's from list for a given listname
+app.get('/get_ids_from_list/:listname', (req, res) => {
+  const listname = req.params.listname;
+  // Check if the listname exists
+  const existingList = listData.find((list) => list.listname === listname);
+  if (!existingList) {
+    return res.status(400).json({ error: 'No list found' });
+  } 
+  // Save the updated data to the lists.json file
+  fs.writeFileSync('lists.json', JSON.stringify(listData, null, 2));
+  res.json(existingList["superheroes"]);
+});
+
+
+
+// delete a list with a given list name
+app.delete('/delete_list/:listname', (req, req) => {
+  const linstname = req.params.listname; 
+  const existingListIndex = listData.findIndex((list) => list.listname === listname);
+  if (!existingListIndex) {
+    return res.status(400).json({ error: 'No list found' });
+  } 
+
+  listData.splice(existingListIndex, 1);
+  fs.writeFileSync('lists.json', JSON.stringify(listData,null,2)); 
+  res.json({ message: 'List deleted successfully' });
+
+}); 
+
+// get a list of names, information and powers of all superheroes saved in a given list. 
+ // Get id's from list for a given listname
+app.get('/get_ids_from_list/:listname', (req, res) => {
+  const listname = req.params.listname;
+  // Check if the listname exists
+  const existingList = listData.find((list) => list.listname === listname);
+  if (!existingList) {
+    return res.status(400).json({ error: 'No list found' });
+  } 
+
+  var superheroes = []; 
+  for(var id in existingList['superheroes']){ // iterates through one list of superhero id's
+    for(var heroes in superheroInfoData){ // iterates through 
+      if (heroes.id === id){
+  
+      }
+    }
+    
+  }
+
+  
+
+
+
+  // Save the updated data to the lists.json file
+  fs.writeFileSync('lists.json', JSON.stringify(listData, null, 2));
+  res.json(existingList["superheroes"]);
+});
 
 
 // Start the server
