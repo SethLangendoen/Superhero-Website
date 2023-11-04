@@ -7,7 +7,7 @@
 
 
 <body>
-  <h1>Superhero Information</h1>
+  <h1>Superhero hub</h1>
   <input type="number" id="superheroId" placeholder="Enter Superhero ID">
 
   <button id = "getSuperHeroInfo">Get Info</button>
@@ -31,22 +31,30 @@
 
   <!-- Content for lists -->
 
-
+  <br>
+  <br>
 
 
   <div>
-    <p>Create New List</p>
-    <input placeholder="New list name" id = 'listName'>
+    <h3>List Management: </h3>
+    <input placeholder="List name" id = 'listName'>
     <button id = 'createListButton'>Create List</button>
+    <button id = 'deleteListButton'>Delete List</button>
     <div id = 'resultDiv'></div>
 
-    <label for="GeneratedLists">Select List: </label>
-    <select id="GeneratedLists">
-    <input placeholder="Add superhero name" id = 'addSuperhero'>
 
+    <p>Add Superheros To List</p>
+    <input placeholder = "List name">
+    <input placeholder="Add names separated by commas" id = 'addSuperhero'>
+    <button>Add superheroes</button>
       
 
-    </select>
+    <p>Lists Created</p>
+    <select id="listsCreated"></select>
+    <button>Display List</button>
+
+
+
 
   </div>
 

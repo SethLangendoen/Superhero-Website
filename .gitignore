@@ -1,3 +1,5 @@
-server/superheroes/superhero_info.json
-server/superheroes/superhero_powers.json
+Server/superhero_info.json
+Server/superhero_powers.json
+Server/lists.json
+
 node_modules

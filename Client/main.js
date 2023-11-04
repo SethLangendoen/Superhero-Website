@@ -5,8 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const superheroInfoDiv = document.getElementById('superheroInfo');
   const createListButton = document.getElementById('createListButton'); 
   const resultDiv = document.getElementById('resultDiv'); 
-  const select = document.getElementById('GeneratedLists')
-  const addSuperhero = document.getElementById('addSuperhero')
+  const deleteListButton = document.getElementById('deleteListButton'); 
+  const select = document.getElementById('GeneratedLists'); 
+  const addSuperhero = document.getElementById('addSuperhero'); 
+  const listsCreated = document.getElementBuId('listsCreated'); 
 
   getInfoButton.addEventListener('click', () => {
     const superheroId = document.getElementById('superheroId').value;
@@ -172,12 +174,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Stuff for the lists
 
+// create a function called update lists created that iterates through the name of the json file to update all the options. 
+updateLists = function(){
+  fetch(`/get_ids_from_list/`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+    // this needs to be relative to the json file...
+    .then((response) => response.json())
+    .then((data) => {
+    
+      for(var item in data){
+        var option = document.createElement('option'); 
+        option.innerHTML = item; 
+        listsCreated.appendChild(option)
+      }
 
+    })
+    .catch((error) => {
+      resultDiv.innerHTML = `Error: ${error.message}`;
+    });
+}
+
+
+
+// Create a list
 createListButton.addEventListener('click', function(){
   const newListName = document.getElementById('listName'); 
   const listName = newListName.value; 
 
-  // to create the list
+  // to create a list
   fetch(`/create_list/${listName}`, {
     method: 'POST',
     headers: {
@@ -185,28 +213,45 @@ createListButton.addEventListener('click', function(){
     },
   })
 
-  
     // this needs to be relative to the json file...
     .then((response) => response.json())
     .then((data) => {
-      resultDiv.innerHTML = `List created with name: ${data.listname}`;
+      resultDiv.innerHTML = `List created with name: ${listName}`;
 
     })
     .catch((error) => {
       resultDiv.innerHTML = `Error: ${error.message}`;
     });
 
-
-    // to update the options in GeneratedLists: 
-    
-
-
-
-
+    updateLists(); 
 });
 
 
+// Delete a list
+deleteListButton.addEventListener('click', function(){
+  const listName = document.getElementById('listName'); 
+  const listText = listName.value; 
+  alert(listText); 
+  // to create a list
+  fetch(`/delete_list/${listText}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      resultDiv.innerHTML = `List deleted`;
 
+    })
+    .catch((error) => {
+      resultDiv.innerHTML = `Error: ${error.message}`;
+    });
+
+    // to update the listnames displayed in GeneratedLists: 
+
+    updateLists(); 
+});
 
 });
 
