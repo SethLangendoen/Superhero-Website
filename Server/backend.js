@@ -54,30 +54,6 @@ app.get('/get_superhero_i/:name', (req, res) => { // defines an http get route. 
 
 
 
-
-
-
-//This is for question four (works for name, race and publisher)
-
-// app.get('/get_superhero_ids_by_field/:field/:pattern/:n', (req, res) => {
-//   const {field, pattern, n} = req.params;
-
-//   const heroes = []
-//   for(var hero in superheroInfoData){
-//     if (hero[pattern] == field){
-//       heroes.push(hero.id); 
-//     }
-//   }
-
-//     // Return the first `n` IDs or all IDs if `n` is not provided
-//     const results = n ? heroes.slice(0, n) : heroes;
-
-//     res.json(results);
-
-// });
-
-
-
 app.get('/search_superhero_ids/:field/:pattern/:n', (req, res) => {
   const { field, pattern, n } = req.params;
   //const superheroData = isPowerField(field) ? superheroPowerData : superheroInfoData;
@@ -352,7 +328,6 @@ function getHeroNameById(id) {
   const hero = superheroInfoData.find((hero) => hero.id === parseInt(id));
   return hero ? hero.name : null;
 }
-
 
 
 // Start the server

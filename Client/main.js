@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+//document.addEventListener('DOMContentLoaded', () => {
   const getInfoButton = document.getElementById('getSuperHeroInfo');
   const searchByButton = document.getElementById('searchByButton'); 
   const superherosearchedDiv = document.getElementById('superheroSearched');
@@ -10,7 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const addSuperhero = document.getElementById('addSuperhero'); 
   const listsCreated = document.getElementBuId('listsCreated'); 
 
+
+
+
   getInfoButton.addEventListener('click', () => {
+    alert('responsive'); 
+
+    alert("wtffff")
     const superheroId = document.getElementById('superheroId').value;
     const superheroInfoDiv = document.getElementById('superheroInfo');
     const superheroPowersDiv = document.getElementById('superheroPowers');
@@ -202,6 +208,8 @@ updateLists = function(){
 
 // Create a list
 createListButton.addEventListener('click', function(){
+  
+  alert('responsive'); 
   const newListName = document.getElementById('listName'); 
   const listName = newListName.value; 
 
@@ -231,7 +239,10 @@ createListButton.addEventListener('click', function(){
 deleteListButton.addEventListener('click', function(){
   const listName = document.getElementById('listName'); 
   const listText = listName.value; 
+
   alert(listText); 
+  alert('delete list trigger'); 
+
   // to create a list
   fetch(`/delete_list/${listText}`, {
     method: 'DELETE',
@@ -253,5 +264,5 @@ deleteListButton.addEventListener('click', function(){
     updateLists(); 
 });
 
-});
+//});
 
