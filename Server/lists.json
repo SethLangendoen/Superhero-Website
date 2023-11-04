@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "listname": "asdf",
+    "superheroes": []
+  },
+  {
+    "listname": "asdfg",
+    "superheroes": []
+  }
+]

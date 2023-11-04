@@ -6,8 +6,8 @@ const { join } = require('path');
 const path = require('path'); // Import the 'path' module.
 
 
-// Serve static files (HTML, CSS, JavaScript) from the "Client" directory.
 
+// Serve static files (HTML, CSS, JavaScript) from the "Client" directory.
 app.use('/', express.static(path.join(__dirname, '../Client'))); 
 
 // to Serve the index.html file. 
@@ -238,6 +238,7 @@ app.post('/create_list/:listname', (req, res) => {
 
 
 
+
 // Add items to a list in the json file
 app.post('/add_ids_to_list/:listname/:ids', (req, res) => {
   const {listname, ids} = req.params;
@@ -255,6 +256,8 @@ app.post('/add_ids_to_list/:listname/:ids', (req, res) => {
 
 
 
+
+// for display list
 // Get id's from list for a given listname
 app.get('/get_ids_from_list/:listname', (req, res) => {
   const listname = req.params.listname;
@@ -269,39 +272,32 @@ app.get('/get_ids_from_list/:listname', (req, res) => {
 });
 
 
-
-// delete a list with a given list name
+// delete a list
 app.delete('/delete_list/:listname', (req, res) => {
   const listname = req.params.listname; 
   const existingListIndex = listData.findIndex((list) => list.listname === listname);
-  if (!existingListIndex) {
+  if (existingListIndex === -1) {
     return res.status(400).json({ error: 'No list found' });
   } else {
     listData.splice(existingListIndex, 1);
-    fs.writeFileSync('lists.json', JSON.stringify(listData,null,2)); 
+    fs.writeFileSync('lists.json', JSON.stringify(listData, null, 2)); 
     res.json({ message: 'List deleted successfully' });
-
   }
-
-  // listData.splice(existingListIndex, 1);
-  // fs.writeFileSync('lists.json', JSON.stringify(listData,null,2)); 
-  // res.json({ message: 'List deleted successfully' });
-
-}); 
+});
+ 
 
 
 // Get list name from lists.json
 app.get('/get_ids_from_list/', (req, res) => {
   // Check if the listname exists
   const listNames = []
-  for (item in listData){
-    listNames.append(item.name); 
+  for (var item of listData){
+    listNames.push(item.listname); 
   }
   // Save the updated data to the lists.json file
   fs.writeFileSync('lists.json', JSON.stringify(listData, null, 2));
   res.json(listNames);
 });
-
 
 
 // get a list of superheroes containing both their information and their powers from some listname. 

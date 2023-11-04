@@ -1,4 +1,3 @@
-//document.addEventListener('DOMContentLoaded', () => {
   const getInfoButton = document.getElementById('getSuperHeroInfo');
   const searchByButton = document.getElementById('searchByButton'); 
   const superherosearchedDiv = document.getElementById('superheroSearched');
@@ -8,15 +7,11 @@
   const deleteListButton = document.getElementById('deleteListButton'); 
   const select = document.getElementById('GeneratedLists'); 
   const addSuperhero = document.getElementById('addSuperhero'); 
-  const listsCreated = document.getElementBuId('listsCreated'); 
-
-
-
-
+  const listsCreated = document.getElementById('listsCreated'); 
+  const addHeroesButton = document.getElementById('addHeroesButton'); 
+  const addedHeroesText = document.getElementById('addedHeroesText'); 
   getInfoButton.addEventListener('click', () => {
-    alert('responsive'); 
 
-    alert("wtffff")
     const superheroId = document.getElementById('superheroId').value;
     const superheroInfoDiv = document.getElementById('superheroInfo');
     const superheroPowersDiv = document.getElementById('superheroPowers');
@@ -86,10 +81,7 @@
           .then((response) => response.json())
           .then((data) => {
 
-              alert(selectedValue + 'was searched'); 
               data.forEach((id) => {
-
-
 
 
                 if (selectedValue === 'name'){
@@ -148,7 +140,6 @@
 
                 } else if (selectedValue == 'power'){
 
-                  //alert('in power'); 
                   fetch(`/get_superhero_info/${id}`)
                   .then((response) => response.json())
                   .then((data) => {
@@ -191,8 +182,8 @@ updateLists = function(){
     // this needs to be relative to the json file...
     .then((response) => response.json())
     .then((data) => {
-    
-      for(var item in data){
+      listsCreated.innerHTML = ''; 
+      for(var item of data){
         var option = document.createElement('option'); 
         option.innerHTML = item; 
         listsCreated.appendChild(option)
@@ -200,18 +191,19 @@ updateLists = function(){
 
     })
     .catch((error) => {
-      resultDiv.innerHTML = `Error: ${error.message}`;
+      resultDiv.innerHTML += `this is the culprit: ${error.message}`;
     });
 }
+updateLists(); 
 
 
 
 // Create a list
 createListButton.addEventListener('click', function(){
   
-  alert('responsive'); 
   const newListName = document.getElementById('listName'); 
   const listName = newListName.value; 
+
 
   // to create a list
   fetch(`/create_list/${listName}`, {
@@ -220,29 +212,23 @@ createListButton.addEventListener('click', function(){
       'Content-Type': 'application/json',
     },
   })
-
     // this needs to be relative to the json file...
     .then((response) => response.json())
     .then((data) => {
       resultDiv.innerHTML = `List created with name: ${listName}`;
-
     })
     .catch((error) => {
-      resultDiv.innerHTML = `Error: ${error.message}`;
+      resultDiv.innerHTML = `Here -> Error: ${error.message}`;
     });
-
     updateLists(); 
 });
+
 
 
 // Delete a list
 deleteListButton.addEventListener('click', function(){
   const listName = document.getElementById('listName'); 
   const listText = listName.value; 
-
-  alert(listText); 
-  alert('delete list trigger'); 
-
   // to create a list
   fetch(`/delete_list/${listText}`, {
     method: 'DELETE',
@@ -253,16 +239,47 @@ deleteListButton.addEventListener('click', function(){
     .then((response) => response.json())
     .then((data) => {
       resultDiv.innerHTML = `List deleted`;
-
     })
     .catch((error) => {
       resultDiv.innerHTML = `Error: ${error.message}`;
     });
-
     // to update the listnames displayed in GeneratedLists: 
-
     updateLists(); 
 });
 
-//});
+
+
+addHeroesButton.addEventListener('click', function(){
+  const list = document.getElementById('list'); 
+  const herosInput = document.getElementById('addSuperhero'); 
+
+  var idList = []; 
+  var namesFound = herosInput.split(','); 
+  for (var item of namesFound){
+    fetch(`/get_superhero_i/${item}`)
+    .then((response) => response.json())
+    .then((data) => {
+      idList.push(data.id); 
+    })
+    .catch((powersError) => {
+      superherosearchedDiv.innerHTML = `Error: ${powersError.message}`;
+    });
+  }
+
+  fetch(`/add_ids_to_list/${list.value}/${idList}`)
+  .then((response) => response.json)
+  .then((data) => {
+    addedHeroesText.innerHTML = 'Successfully added heroes to list' 
+  })
+  .catch((error) => {
+    // Handle any errors that occurred during the fetch request
+    console.error('Error:', error);
+  });
+
+
+  });  
+
+
+
+
 
