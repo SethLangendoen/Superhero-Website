@@ -48,7 +48,6 @@ app.get('/get_superhero_i/:name', (req, res) => { // defines an http get route. 
     return res.status(404).json({ error: 'Superhero name not found' });
   }
   res.send(JSON.stringify(superhero));
-
 });
 
 
@@ -238,22 +237,32 @@ app.post('/create_list/:listname', (req, res) => {
 
 
 
-
 // Add items to a list in the json file
-app.post('/add_ids_to_list/:listname/:ids', (req, res) => {
+app.get('/add_ids_to_list/:listname/:ids', (req, res) => {
   const {listname, ids} = req.params;
   // Check if the listname exists
+
+  const idList = ids.split(','); 
+
+
   const existingList = listData.find((list) => list.listname === listname);
   if (existingList) {
-    existingList["superheroes"] = ids; // set the new id's in that list
+    existingList.superheroes = idList; // set the new id's in that list
+
   } else {
     return res.status(400).json({ error: 'No list found' });
   }
+
   // Save the updated data to the lists.json file
   fs.writeFileSync('lists.json', JSON.stringify(listData, null, 2));
-  res.json(existingList);
+  res.json(existingList.superheroes);
 });
 
+
+
+
+// var existingList = listData.find((list) => list.listname === "New heroes");
+// existingList.superheroes = [0,1,2]
 
 
 
@@ -268,7 +277,7 @@ app.get('/get_ids_from_list/:listname', (req, res) => {
   } 
   // Save the updated data to the lists.json file
   fs.writeFileSync('lists.json', JSON.stringify(listData, null, 2));
-  res.json(existingList["superheroes"]);
+  res.json(existingList.superheroes);
 });
 
 
@@ -298,6 +307,7 @@ app.get('/get_ids_from_list/', (req, res) => {
   fs.writeFileSync('lists.json', JSON.stringify(listData, null, 2));
   res.json(listNames);
 });
+
 
 
 // get a list of superheroes containing both their information and their powers from some listname. 
