@@ -311,29 +311,56 @@ app.get('/get_ids_from_list/', (req, res) => {
 
 
 // get a list of superheroes containing both their information and their powers from some listname. 
-app.get('/get_ids_from_list/:listname', (req, res) => {
+app.get('/get_info_from_list/:listname', (req, res) => {
   const listname = req.params.listname;
   // Check if the listname exists
   const existingList = listData.find((list) => list.listname === listname);
   if (!existingList) {
     return res.status(400).json({ error: 'No list found' });
   } 
-  var superheroes = []; 
+
+  var superheroesList = []; 
   for (const id of existingList.superheroes) {
     const heroName = getHeroNameById(id);
     if (heroName) {
-      const heroInfo = superheroInfoData.find((hero) => hero.id === id);
-      const heroPowers = superheroPowerData.filter((hero) => hero.hero_names.toLowerCase() === heroName.toLowerCase());
-      superheroes.push([heroInfo, heroPowers]);
+      const heroInfo = superheroInfoData.find((hero) => hero.id === parseInt(id));
+      var heroInfoList = []; 
+      if (heroInfo){
+        heroInfoList.push(heroInfo.name); 
+        heroInfoList.push(heroInfo.Gender); 
+        heroInfoList.push(heroInfo['Eye color']); 
+        heroInfoList.push(heroInfo.Race); 
+        heroInfoList.push(heroInfo['Hair color']); 
+        heroInfoList.push(heroInfo.Height); 
+        heroInfoList.push(heroInfo.Publisher); 
+        heroInfoList.push(heroInfo['Skin color']); 
+        heroInfoList.push(heroInfo.Alignment); 
+        heroInfoList.push(heroInfo.Weight); 
+      }
+
+      const heroPowers = superheroPowerData.find((hero) => hero.hero_names.toLowerCase() === heroInfo.name.toLowerCase());
+      var heroPowerList = []; 
+      if(heroPowers){
+        Object.entries(heroPowers).map(([power, value]) => {
+          if (value === "True") {
+            heroPowerList.push(power);
+          }
+        })
+      }
+
+      
+      superheroesList.push([heroInfoList, heroPowerList]);
     }
   }
   fs.writeFileSync('lists.json', JSON.stringify(listData, null, 2));
-  res.json(superheroes);
+  res.json(superheroesList);
 });
+
 function getHeroNameById(id) {
   const hero = superheroInfoData.find((hero) => hero.id === parseInt(id));
   return hero ? hero.name : null;
 }
+
 
 
 // Start the server

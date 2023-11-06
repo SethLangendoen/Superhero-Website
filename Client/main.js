@@ -11,7 +11,7 @@
   const addHeroesButton = document.getElementById('addHeroesButton'); 
   const addedHeroesText = document.getElementById('addedHeroesText'); 
   const displayList = document.getElementById('displayList'); 
-
+  const listDisplay = document.getElementById('listDisplay'); 
 
   getInfoButton.addEventListener('click', () => {
 
@@ -208,6 +208,7 @@ createListButton.addEventListener('click', function(){
   const listName = newListName.value; 
 
 
+
   // to create a list
   fetch(`/create_list/${listName}`, {
     method: 'POST',
@@ -304,9 +305,73 @@ addHeroesButton.addEventListener('click', function(){
 
 });  
 
-displayList.addEventListener('click', function(){
-  
 
+displayList.addEventListener('click', function(){
+
+  console.log('button clicked'); 
+
+  fetch(`/get_info_from_list/${listsCreated.value}`)
+  .then((response) => response.json())
+  .then((data) => {
+    // Process the data and display the superheroes
+    displaySuperheroes(data);
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+
+
+
+  function displaySuperheroes(superheroes) {
+    console.log('function displaySuperheroes called'); 
+    if (superheroes && superheroes.length > 0) {
+      listDisplay.innerHTML = ''; // Clear the previous content
+  
+      superheroes.forEach(([heroInfo, heroPowers]) => {
+        const superheroElement = document.createElement('div');
+
+        superheroElement.innerHTML = `
+          <p><b>Name:</b> ${heroInfo[0]}</p>
+          <p>Gender: ${heroInfo[1]}</p>
+          <p>Eye color: ${heroInfo[2]}</p>
+          <p>Race: ${heroInfo[3]}</p>
+          <p>Hair color: ${heroInfo[4]}</p>
+          <p>Height: ${heroInfo[5]}</p>
+          <p>Publisher: ${heroInfo[6]}</p>
+          <p>Skin color: ${heroInfo[7]}</p>
+          <p>Alignment: ${heroInfo[8]}</p>
+          <p>Weight: ${heroInfo[9]}</p>
+        `;
+        
+        
+
+        // Check if heroPowers is defined before building the powers list
+        if (Array.isArray(heroPowers)) {
+          const powersList = document.createElement('div');
+          const heading = document.createElement('h4'); 
+          const br = document.createElement('br'); 
+          heading.textContent = 'Powers: ';
+          powersList.appendChild(heading); 
+          heroPowers.forEach((power) => {
+            const powerItem = document.createElement('p');
+            powerItem.textContent = power;
+            powersList.appendChild(powerItem);
+            powersList.appendChild(br)
+          });
+          superheroElement.appendChild(powersList);
+        } else {
+          // Handle the case where heroPowers is not an array (e.g., it might be null or an object)
+          // You can choose to display an error message or handle it as needed.
+        }
+        
+        listDisplay.appendChild(superheroElement);
+
+      });
+    } else {
+      listDisplay.innerHTML = 'No superheroes found for the given list name.';
+    }
+  }
+  
 
 })
 

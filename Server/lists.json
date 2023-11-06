@@ -2,17 +2,15 @@
   {
     "listname": "Favourite heroes",
     "superheroes": [
-      "1",
-      "331",
-      "331"
+      "68"
     ]
   },
   {
     "listname": "New heroes",
     "superheroes": [
-      0,
-      1,
-      2
+      "331",
+      "331",
+      "331"
     ]
   }
 ]
