@@ -10,6 +10,9 @@
   const listsCreated = document.getElementById('listsCreated'); 
   const addHeroesButton = document.getElementById('addHeroesButton'); 
   const addedHeroesText = document.getElementById('addedHeroesText'); 
+  const displayList = document.getElementById('displayList'); 
+
+
   getInfoButton.addEventListener('click', () => {
 
     const superheroId = document.getElementById('superheroId').value;
@@ -252,32 +255,69 @@ deleteListButton.addEventListener('click', function(){
 addHeroesButton.addEventListener('click', function(){
   const list = document.getElementById('list'); 
   const herosInput = document.getElementById('addSuperhero'); 
-
+  alert('func called'); 
   var idList = []; 
-  var namesFound = herosInput.split(','); 
-  for (var item of namesFound){
-    fetch(`/get_superhero_i/${item}`)
-    .then((response) => response.json())
-    .then((data) => {
-      idList.push(data.id); 
-    })
-    .catch((powersError) => {
-      superherosearchedDiv.innerHTML = `Error: ${powersError.message}`;
-    });
-  }
+  var idText = ''; 
+  var namesFound = herosInput.value.split(','); 
+  alert("Names found: " + namesFound.join(', '));
 
-  fetch(`/add_ids_to_list/${list.value}/${idList}`)
-  .then((response) => response.json)
-  .then((data) => {
-    addedHeroesText.innerHTML = 'Successfully added heroes to list' 
-  })
+
+    // Create an array of promises for each fetch request
+    var fetchPromises = namesFound.map(item => {
+      return new Promise((resolve, reject) => {
+        fetch(`/get_superhero_i/${item}`)
+          .then((response) => response.json())
+          .then((data) => {
+            idList.push(data.id);
+            idText += '' + data.id + ','; 
+
+            resolve(); // Resolve the promise when this fetch request is done
+          })
+          .catch((powersError) => {
+            reject(powersError); // Reject the promise in case of an error
+          });
+      });
+    });
+
+
+
+  Promise.all(fetchPromises)
+  .then(() => {
+    console.log("Should be full list of ids: " + idText); 
+    //alert(JSON.stringify(idList) + 'This is the list'); 
+    //console.log(JSON.stringify(idList) + 'This is the list')
+    fetch(`/add_ids_to_list/${list.value}/${idText.slice(0,-1)}`)
+    .then((response) => response.json)
+    .then((data) => {
+      addedHeroesText.innerHTML = 'Successfully added heroes'; 
+    })
+    .catch((error) => {
+      // Handle any errors that occurred during the fetch request
+      console.error('Error:', error);
+    });
+
+  })    
   .catch((error) => {
-    // Handle any errors that occurred during the fetch request
     console.error('Error:', error);
   });
 
 
-  });  
+});  
+
+displayList.addEventListener('click', function(){
+  
+
+
+})
+
+
+
+
+
+
+
+
+
 
 
 

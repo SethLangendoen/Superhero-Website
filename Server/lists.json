@@ -1,10 +1,18 @@
 [
   {
-    "listname": "asdf",
-    "superheroes": []
+    "listname": "Favourite heroes",
+    "superheroes": [
+      "1",
+      "331",
+      "331"
+    ]
   },
   {
-    "listname": "asdfg",
-    "superheroes": []
+    "listname": "New heroes",
+    "superheroes": [
+      0,
+      1,
+      2
+    ]
   }
 ]
