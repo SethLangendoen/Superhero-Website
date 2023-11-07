@@ -2,7 +2,10 @@
   {
     "listname": "Favourite heroes",
     "superheroes": [
-      "68"
+      "345",
+      "68",
+      "646",
+      "331"
     ]
   },
   {
@@ -11,6 +14,27 @@
       "331",
       "331",
       "331"
+    ]
+  },
+  {
+    "listname": "human heroes",
+    "superheroes": [
+      "3",
+      "7"
+    ]
+  },
+  {
+    "listname": "雷蒙德",
+    "superheroes": [
+      "331"
+    ]
+  },
+  {
+    "listname": "test",
+    "superheroes": [
+      "undefined",
+      "331",
+      "646"
     ]
   }
 ]

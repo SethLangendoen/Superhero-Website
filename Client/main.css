@@ -1,0 +1,139 @@
+
+/* Body */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+
+  }
+  
+  /* Header */
+  h1 {
+    background-color: #09314c;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    margin-top: 0px; 
+  }
+  
+  /* Form elements */
+  label {
+    display: block;
+    margin: 10px 0;
+  }
+  
+  input, select, button {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+  }
+
+  
+  button {
+    background-color: #007acc;
+    color: white;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #005ca7;
+  }
+  
+  /* List Management */
+  #listName {
+    width: 50%;
+  }
+
+  #heroSearch {
+    display: flex; /* Use flexbox to align children horizontally */
+    flex-wrap: nowrap; /* Prevent items from wrapping to the next line */
+    justify-content: flex-start; /* Align items to the start of the container (left) */
+    align-items: center; /* Center items vertically within the container */
+  }
+
+
+  #heroSort {
+    display: flex; /* Use flexbox to align children horizontally */
+    flex-wrap: nowrap; /* Prevent items from wrapping to the next line */
+    justify-content: flex-start; /* Align items to the start of the container (left) */
+    align-items: center; /* Center items vertically within the container */
+  }
+
+  #addHeroes{
+    display: flex; /* Use flexbox to align children horizontally */
+    flex-wrap: nowrap; /* Prevent items from wrapping to the next line */
+    justify-content: flex-start; /* Align items to the start of the container (left) */
+    align-items: center; /* Center items vertically within the container */
+  }
+
+  #myCreatedLists{
+    display: flex; /* Use flexbox to align children horizontally */
+    flex-wrap: nowrap; /* Prevent items from wrapping to the next line */
+    justify-content: flex-start; /* Align items to the start of the container (left) */
+    align-items: center; /* Center items vertically within the container */
+  }
+  
+
+  h3{
+    margin-top: 50px; 
+  }
+  
+  #addSuperhero {
+    width: 50%;
+  }
+  
+  /* Result Div */
+  #resultDiv {
+    padding: 10px;
+    margin: 10px 0;
+  }
+  
+  /* Lists Created */
+  #listsCreated {
+    width: 70%;
+  }
+  
+  /* List Display */
+  #listDisplay {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+  }
+  
+
+  /* Style for the div containing superhero info */
+.divClass {
+    border: 1px solid #ccc;
+    margin: 10px;
+    padding: 10px;
+    background-color: #f8f8f8;
+  }
+  
+  /* Style for the p elements inside the div */
+  .data-key {
+    margin: 5px 0;
+    font-weight: bold;
+    color: #007acc;
+  }
+  
+  /* Optionally, you can style individual superhero data keys differently */
+  .data-key.Name {
+    color: #ff5722; /* Change color for the "Name" key, for example */
+  }
+  
+  .data-key.Power {
+    color: #4caf50; /* Change color for the "Power" key, for example */
+  }
+
+  .displayedListHeroes{
+    border: 1px solid #ccc;
+    margin: 10px;
+    padding: 10px;
+    background-color: #f8f8f8;
+  }
+  
+  /* Add more styles as needed */
+  

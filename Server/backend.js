@@ -6,6 +6,23 @@ const { join } = require('path');
 const path = require('path'); // Import the 'path' module.
 
 
+const i18n = require('i18n');
+
+
+// used for multiple language compatibility
+// Initialize the i18n library
+i18n.configure({
+  locales: ['en', 'fr'],
+  directory: __dirname + '/locales',
+});
+
+// Custom middleware for language detection
+app.use((req, res, next) => {
+  const userLanguage = req.query.lang || 'en'; // Detect language from URL parameter or use a default
+  i18n.setLocale(req, userLanguage);
+  next();
+});
+
 
 // Serve static files (HTML, CSS, JavaScript) from the "Client" directory.
 app.use('/', express.static(path.join(__dirname, '../Client'))); 
@@ -49,6 +66,7 @@ app.get('/get_superhero_i/:name', (req, res) => { // defines an http get route. 
   }
   res.send(JSON.stringify(superhero));
 });
+
 
 
 
@@ -348,7 +366,6 @@ app.get('/get_info_from_list/:listname', (req, res) => {
         })
       }
 
-      
       superheroesList.push([heroInfoList, heroPowerList]);
     }
   }

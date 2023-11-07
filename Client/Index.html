@@ -3,17 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>Superhero Information</title>
+  <link rel="stylesheet" type="text/css" href="main.css"> <!-- Link your CSS file here -->
+
 </head>
 
 
+
 <body>
-  <h1>Hero Hub</h1>
-  <input type="number" id="superheroId" placeholder="Enter Superhero ID">
-
-  <button id = "getSuperHeroInfo">Get Info</button>
+  <h1>SUPERHERO HUB</h1>
+  <!-- <input type="number" id="superheroId" placeholder="Enter Superhero ID"> -->
+  <!-- <button id = "getSuperHeroInfo">Get Info</button>
   <div id="superheroInfo"></div>
-  <div id = "superheroPowers"></div>
+  <div id = "superheroPowers"></div> -->
 
+  <div id = heroSearch>
   <!-- for front-end 1 -->
   <label for="searchBy">Search By:</label>
   <select id="searchBy">
@@ -26,6 +29,20 @@
   <input placeholder="Enter value here" id = 'inputValue'>
   <input placeholder = "n superheros to appear" id = nValue>
   <button id="searchByButton">Search</button>
+  </div>
+
+  <div id = heroSort>
+
+  <label for="sortBy">Sort By:</label>
+  <select id="sortBy">
+    <option value="name">name</option>
+    <option value="Race">race</option>
+    <option value="Publisher">publisher</option>
+    <!-- <option value="power">power</option> -->
+  </select>
+  <button id = 'sort'>Sort</button>
+  </div>
+
   <div id = 'superheroSearched'></div>
 
 
@@ -42,18 +59,34 @@
     <div id = 'resultDiv'></div>
 
 
-
+    <div id = 'addHeroes'>
     <p>Add Superheros To List</p>
     <input placeholder = "List name" id = list>
     <input placeholder="Add names separated by commas" id = 'addSuperhero'>
     <button id = "addHeroesButton">Add superheroes</button>
+    </div>
+
     <div id = addedHeroesText></div>
 
-
+    <div id = 'myCreatedLists'>
     <p>Lists Created</p>
     <select id="listsCreated"></select>
     <button id = displayList>Display List</button>
+    </div>
+    <label for="sortByList">Sort By:</label>
+
+    <select id="sortByList">
+      <option value="name">name</option>
+      <option value="Race">race</option>
+      <option value="Publisher">publisher</option>
+      <!-- <option value="power">power</option> -->
+    </select>
+    <button id = 'sort'>Sort</button>
+
+
     <div id = listDisplay></div>
+
+    
   </div>
 
 

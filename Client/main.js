@@ -12,58 +12,94 @@
   const addedHeroesText = document.getElementById('addedHeroesText'); 
   const displayList = document.getElementById('displayList'); 
   const listDisplay = document.getElementById('listDisplay'); 
+  const sortBy = document.getElementById('sortBy'); 
 
-  getInfoButton.addEventListener('click', () => {
+  // getInfoButton.addEventListener('click', () => {
 
-    const superheroId = document.getElementById('superheroId').value;
-    const superheroInfoDiv = document.getElementById('superheroInfo');
-    const superheroPowersDiv = document.getElementById('superheroPowers');
+  //   const superheroId = document.getElementById('superheroId').value;
+  //   const superheroInfoDiv = document.getElementById('superheroInfo');
+  //   const superheroPowersDiv = document.getElementById('superheroPowers');
 
-    // Send an HTTP GET request to the server to get superhero information
-    fetch(`/get_superhero_info/${superheroId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        superheroInfoDiv.innerHTML = ''; 
-        superheroPowersDiv.innerHTML = ''; 
-        // print the superheroes data
-        for (const key in data) {
-          if (data.hasOwnProperty(key)) {
-            superheroInfoDiv.innerHTML += `${key}: ${data[key]}<br>`;
-          }
-        }
-        superheroInfoDiv.innerHTML += "<br>"
-        // Send another request to get superhero powers based on the name
-        fetch(`/get_superhero_power/${data.name}`)
-          .then((powersResponse) => powersResponse.json())
-          .then((powersData) => {
-            for (const key in powersData) {
-              if (powersData.hasOwnProperty(key) && powersData[key] === "True") {
-                  superheroPowersDiv.innerHTML += key + "<br>";
-              }
+  //   // Send an HTTP GET request to the server to get superhero information
+  //   fetch(`/get_superhero_info/${superheroId}`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       superheroInfoDiv.innerHTML = ''; 
+  //       superheroPowersDiv.innerHTML = ''; 
+  //       // print the superheroes data
+  //       for (const key in data) {
+  //         if (data.hasOwnProperty(key)) {
+  //           superheroInfoDiv.innerHTML += `${key}: ${data[key]}<br>`;
+  //         }
+  //       }
+  //       superheroInfoDiv.innerHTML += "<br>"
+  //       // Send another request to get superhero powers based on the name
+  //       fetch(`/get_superhero_power/${data.name}`)
+  //         .then((powersResponse) => powersResponse.json())
+  //         .then((powersData) => {
+  //           for (const key in powersData) {
+  //             if (powersData.hasOwnProperty(key) && powersData[key] === "True") {
+  //                 superheroPowersDiv.innerHTML += key + "<br>";
+  //             }
 
-            }
-          })
-          .catch((powersError) => {
-            superheroPowersDiv.innerHTML = `Error: ${powersError.message}`;
-          });
+  //           }
+  //         })
+  //         .catch((powersError) => {
+  //           superheroPowersDiv.innerHTML = `Error: ${powersError.message}`;
+  //         });
 
-      })
-      .catch((error) => {
-        superheroInfoDiv.innerHTML = `Error: ${error.message}`;
-        superheroPowersDiv.innerHTML = ''; // Clear the superhero powers display on error.
-      });
+  //     })
+  //     .catch((error) => {
+  //       superheroInfoDiv.innerHTML = `Error: ${error.message}`;
+  //       superheroPowersDiv.innerHTML = ''; // Clear the superhero powers display on error.
+  //     });
+  // });
+
+
+  // sorting function: 
+const sortButton = document.getElementById('sort'); 
+
+sortButton.addEventListener('click', function(){
+  sortDivsAndAppend();
+})
+
+
+
+function sortDivsAndAppend() {
+  // Get an array of the div elements
+  const divs = Array.from(superherosearchedDiv.getElementsByClassName('divClass'));
+
+  // Sort the divs based on the text content of the second child
+  divs.sort((a, b) => {
+
+    if (sortBy.value === 'name'){
+      const textA = a.children[1].textContent; // Access the second child
+      const textB = b.children[1].textContent; // Access the second child
+      return textA.localeCompare(textB); // Compare text content alphabetically
+    } else if (sortBy.value === 'Race'){
+      const textA = a.children[4].textContent; // Access the second child
+      const textB = b.children[4].textContent; // Access the second child
+      return textA.localeCompare(textB); // Compare text content alphabetically
+    } else if (sortBy.value === 'Publisher'){
+      const textA = a.children[7].textContent; // Access the second child
+      const textB = b.children[7].textContent; // Access the second child
+      return textA.localeCompare(textB); // Compare text content alphabetically
+    }
+
   });
 
+  // Clear the container
+  superherosearchedDiv.innerHTML = '';
+
+  // Append the sorted divs back to the container
+  divs.forEach(div => superherosearchedDiv.appendChild(div));
+}
 
 
 
 
-
-
-
-
-
-
+  
+  
 
 
 
@@ -72,14 +108,13 @@
     const valueSearched = document.getElementById('searchBy'); // for name, race or publisher. 
     const selectedValue = valueSearched.value; 
     
-
     const inputValue = document.getElementById('inputValue') // for the hero's name inputted
     const nValue = document.getElementById('nValue') // for the hero's name inputted
-
+    console.log(nValue.value); 
 
     superherosearchedDiv.innerHTML = '';
 
-      fetch(`/search_superhero_ids/${inputValue.value}/${selectedValue}/${nValue.value}`)// n required right now
+      fetch(`/search_superhero_ids/${inputValue.value}/${selectedValue}/${nValue.value || 1000}`)
 
           .then((response) => response.json())
           .then((data) => {
@@ -93,11 +128,18 @@
                   .then((response) => response.json())
                   .then((data) => {
                     // print the superheroes data
+                    const div = document.createElement('div'); 
+                    div.setAttribute('class', 'divClass'); 
                     for (const key in data) {
                       if (data.hasOwnProperty(key)) {
-                        superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
+                        const p = document.createElement('p'); 
+                        p.setAttribute('class','data-key'); 
+                        p.textContent = key + ': ' + data[key]; 
+                        div.appendChild(p); 
+                        //superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
                       }
                     }
+                    superherosearchedDiv.appendChild(div)
                   })
                   .catch((powersError) => {
                     superherosearchedDiv.innerHTML = `Error: ${powersError.message}`;
@@ -109,17 +151,26 @@
                   fetch(`/get_superhero_info/${id}`)
                   .then((response) => response.json())
                   .then((data) => {
+
                     // print the superheroes data
+                    const div = document.createElement('div'); 
+                    div.setAttribute('class', 'divClass'); 
+
                     for (const key in data) {
                       if (data.hasOwnProperty(key)) {
-                        superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
+                        const p = document.createElement('p'); 
+                        p.setAttribute('id','data-key'); 
+                        p.textContent = key + ': ' + data[key]; 
+                        div.appendChild(p); 
+                        //superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
                       }
                     }
+                    superherosearchedDiv.appendChild(div)
+
                   })
                   .catch((powersError) => {
                     superherosearchedDiv.innerHTML = `Error: ${powersError.message}`;
                   });
-
 
 
                 } else if (selectedValue == 'Publisher'){
@@ -128,11 +179,20 @@
                   .then((response) => response.json())
                   .then((data) => {
 
+                    const div = document.createElement('div'); 
+                    div.setAttribute('class', 'divClass'); 
+
                     for (const key in data) {
                       if (data.hasOwnProperty(key)) {
-                        superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
+                        const p = document.createElement('p'); 
+                        p.setAttribute('class','data-key'); 
+                        p.textContent = key + ': ' + data[key]; 
+                        div.appendChild(p); 
+                        //superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
                       }
                     }
+                    superherosearchedDiv.appendChild(div)
+
                   })
                   .catch((powersError) => {
                     superherosearchedDiv.innerHTML = `Error: ${powersError.message}`;
@@ -142,19 +202,27 @@
                   
 
                 } else if (selectedValue == 'power'){
-
+                  console.log('inside power')
                   fetch(`/get_superhero_info/${id}`)
                   .then((response) => response.json())
                   .then((data) => {
 
                     //the data here should contain id's of the matching superheros with matching powers to the input field
                     // print the superheroes data 
+                    const div = document.createElement('div'); 
+                    div.setAttribute('class', 'divClass'); 
+
                     for (const key in data) {
                       if (data.hasOwnProperty(key)) {
-                        superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
+                        const p = document.createElement('p'); 
+                        p.setAttribute('id','data-key'); 
+                        p.textContent = key + ': ' + data[key]; 
+                        div.appendChild(p); 
+                        //superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
                       }
                     }
-            
+                    superherosearchedDiv.appendChild(div)
+
                   })
                   .catch((error) => {
                     superherosearchedDiv.innerHTML = `Error: ${error.message}`;
@@ -165,7 +233,7 @@
               });
           })
           .catch((error) => {
-              resultList.innerHTML = `Error: ${error.message}`;
+              superherosearchedDiv.innerHTML = `Error: ${error.message}`;
           });
 
   }); 
@@ -198,6 +266,9 @@ updateLists = function(){
     });
 }
 updateLists(); 
+
+
+
 
 
 
@@ -256,11 +327,9 @@ deleteListButton.addEventListener('click', function(){
 addHeroesButton.addEventListener('click', function(){
   const list = document.getElementById('list'); 
   const herosInput = document.getElementById('addSuperhero'); 
-  alert('func called'); 
   var idList = []; 
   var idText = ''; 
   var namesFound = herosInput.value.split(','); 
-  alert("Names found: " + namesFound.join(', '));
 
 
     // Create an array of promises for each fetch request
@@ -281,12 +350,10 @@ addHeroesButton.addEventListener('click', function(){
     });
 
 
-
   Promise.all(fetchPromises)
   .then(() => {
     console.log("Should be full list of ids: " + idText); 
-    //alert(JSON.stringify(idList) + 'This is the list'); 
-    //console.log(JSON.stringify(idList) + 'This is the list')
+
     fetch(`/add_ids_to_list/${list.value}/${idText.slice(0,-1)}`)
     .then((response) => response.json)
     .then((data) => {
@@ -302,8 +369,10 @@ addHeroesButton.addEventListener('click', function(){
     console.error('Error:', error);
   });
 
-
 });  
+
+
+
 
 
 displayList.addEventListener('click', function(){
@@ -329,6 +398,7 @@ displayList.addEventListener('click', function(){
   
       superheroes.forEach(([heroInfo, heroPowers]) => {
         const superheroElement = document.createElement('div');
+        superheroElement.setAttribute('class','displayedListHeroes'); 
 
         superheroElement.innerHTML = `
           <p><b>Name:</b> ${heroInfo[0]}</p>
