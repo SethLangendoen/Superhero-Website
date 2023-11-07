@@ -13,9 +13,10 @@
   const displayList = document.getElementById('displayList'); 
   const listDisplay = document.getElementById('listDisplay'); 
   const sortBy = document.getElementById('sortBy'); 
+  const sortByList = document.getElementById('sortByList'); 
+  const listSort = document.getElementById('listSort'); 
 
   // getInfoButton.addEventListener('click', () => {
-
   //   const superheroId = document.getElementById('superheroId').value;
   //   const superheroInfoDiv = document.getElementById('superheroInfo');
   //   const superheroPowersDiv = document.getElementById('superheroPowers');
@@ -373,6 +374,43 @@ addHeroesButton.addEventListener('click', function(){
 
 
 
+listSort.addEventListener('click', function(){
+  console.log('event listened'); 
+  sortDivs(); 
+})
+
+
+
+function sortDivs() {
+  console.log('in sort divs'); 
+  // Get an array of the div elements
+  const divs = Array.from(listDisplay.getElementsByClassName('displayedListHeroes'));
+
+  // Sort the divs based on the text content of the second child
+  divs.sort((a, b) => {
+
+    if (sortByList.value === 'name'){
+      const textA = a.children[0].textContent; // Access the second child
+      const textB = b.children[0].textContent; // Access the second child
+      return textA.localeCompare(textB); // Compare text content alphabetically
+    } else if (sortByList.value === 'Race'){
+      const textA = a.children[3].textContent; // Access the second child
+      const textB = b.children[3].textContent; // Access the second child
+      return textA.localeCompare(textB); // Compare text content alphabetically
+    } else if (sortByList.value === 'Publisher'){
+      const textA = a.children[6].textContent; // Access the second child
+      const textB = b.children[6].textContent; // Access the second child
+      return textA.localeCompare(textB); // Compare text content alphabetically
+    }
+
+  });
+  // Clear the container
+  listDisplay.innerHTML = '';
+  // Append the sorted divs back to the container
+  divs.forEach(div => listDisplay.appendChild(div));
+}
+
+
 
 
 displayList.addEventListener('click', function(){
@@ -388,8 +426,6 @@ displayList.addEventListener('click', function(){
   .catch((error) => {
     console.error('Error:', error);
   });
-
-
 
   function displaySuperheroes(superheroes) {
     console.log('function displaySuperheroes called'); 
@@ -413,8 +449,7 @@ displayList.addEventListener('click', function(){
           <p>Weight: ${heroInfo[9]}</p>
         `;
         
-        
-
+      
         // Check if heroPowers is defined before building the powers list
         if (Array.isArray(heroPowers)) {
           const powersList = document.createElement('div');

@@ -9,14 +9,6 @@
     ]
   },
   {
-    "listname": "New heroes",
-    "superheroes": [
-      "331",
-      "331",
-      "331"
-    ]
-  },
-  {
     "listname": "human heroes",
     "superheroes": [
       "3",
@@ -30,9 +22,8 @@
     ]
   },
   {
-    "listname": "test",
+    "listname": "New heroes",
     "superheroes": [
-      "undefined",
       "331",
       "646"
     ]

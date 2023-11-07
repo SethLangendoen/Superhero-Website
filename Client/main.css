@@ -47,6 +47,13 @@ body {
     width: 50%;
   }
 
+  #sortByDiv{
+    display: flex; /* Use flexbox to align children horizontally */
+    flex-wrap: nowrap; /* Prevent items from wrapping to the next line */
+    justify-content: flex-start; /* Align items to the start of the container (left) */
+    align-items: center; /* Center items vertically within the container */
+  }
+
   #heroSearch {
     display: flex; /* Use flexbox to align children horizontally */
     flex-wrap: nowrap; /* Prevent items from wrapping to the next line */
@@ -98,7 +105,6 @@ body {
   
   /* List Display */
   #listDisplay {
-    border: 1px solid #ccc;
     padding: 10px;
     margin: 10px 0;
   }
