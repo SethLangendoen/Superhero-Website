@@ -4,8 +4,6 @@ const app = express(); // inititalizes an instance of the express application to
 const fs = require('fs'); // imports the node.js file system module, used to json data from a file. 
 const { join } = require('path');
 const path = require('path'); // Import the 'path' module.
-
-
 const i18n = require('i18n');
 
 
@@ -15,7 +13,6 @@ i18n.configure({
   locales: ['en', 'fr'],
   directory: __dirname + '/locales',
 });
-
 // Custom middleware for language detection
 app.use((req, res, next) => {
   const userLanguage = req.query.lang || 'en'; // Detect language from URL parameter or use a default
@@ -24,13 +21,14 @@ app.use((req, res, next) => {
 });
 
 
+
 // Serve static files (HTML, CSS, JavaScript) from the "Client" directory.
 app.use('/', express.static(path.join(__dirname, '../Client'))); 
-
 // to Serve the index.html file. 
 app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../Client/index.html'));
 });
+
 
 
 // Read the superhero_info.json file
@@ -51,10 +49,6 @@ app.get('/get_superhero_info/:id', (req, res) => { // defines an http get routej
   res.send(JSON.stringify(superhero));
 });
 
-
-
-
-
 // Define a route to get superhero information by names
 app.get('/get_superhero_i/:name', (req, res) => { // defines an http get route. req is the request object, res is the response object
   const superheroName = req.params.name; 
@@ -67,10 +61,7 @@ app.get('/get_superhero_i/:name', (req, res) => { // defines an http get route. 
   res.send(JSON.stringify(superhero));
 });
 
-
-
-
-
+// return a list of id's based on the user's search field, pattern an n searches
 app.get('/search_superhero_ids/:field/:pattern/:n', (req, res) => {
   const { field, pattern, n } = req.params;
   //const superheroData = isPowerField(field) ? superheroPowerData : superheroInfoData;
@@ -94,9 +85,7 @@ app.get('/search_superhero_ids/:field/:pattern/:n', (req, res) => {
       return false;
     });
   }
-
   const results = n ? matchingSuperheroes.slice(0, n) : matchingSuperheroes;
-
   // If it's the power field, map the "hero_names" to "id" from the other JSON file
   if (pattern == 'power' && results.length > 0) {
     const ids = results.map((hero) => {
@@ -114,16 +103,6 @@ app.get('/search_superhero_ids/:field/:pattern/:n', (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
 // read the powers json file
 const superheroPowerData = JSON.parse(
   fs.readFileSync('superhero_powers.json', 'utf8') // reads the powers jsonfile and parses it into a js object. 
@@ -131,76 +110,7 @@ const superheroPowerData = JSON.parse(
 
 
 
-// Define a route to get superhero powers by name
-app.get('/get_superhero_power/:hero_names', (req, res) => { // defines an http get route. req is the request object, res is the response object
-  const superheroName = req.params.hero_names; // extracts the id parameter from the url and assigns it to superheroId
-  // Find the superhero by name
-  const superheroPowers = superheroPowerData.find(
-    (hero) => hero.hero_names === superheroName
-  );
-  if (!superheroPowers) {
-    return res.status(404).json({ error: 'Superhero powers not found' });
-  }
-  res.send(JSON.stringify(superheroPowers));
-});
-
-
-// function to search heroes by race and put it into an array and send that. 
-app.get('/get_superheroes_by_race/:race', (req, res) => {
-  const raceToSearch = req.params.race;
-  const matchingSuperheroes = superheroInfoData.filter(
-    (hero) => hero.Race === raceToSearch
-  );
-  res.json(matchingSuperheroes);
-});
-
-
-
-// function to search heroes by publisher and put it into an array and send that. 
-app.get('/get_superheroes_by_publisher/:publisher', (req, res) => {
-  const publisherToSearch = req.params.publisher;
-  const matchingSuperheroes = superheroInfoData.filter(
-    (hero) => hero.Publisher === publisherToSearch
-  );
-  res.json(matchingSuperheroes);
-});
-
-
-
-
-// function to search heroes by publisher and put it into an array and send that. 
-// app.get('/get_superheroes_by_power/:publisher', (req, res) => {
-//   const publisherToSearch = req.params.publisher;
-//   const matchingSuperheroes = superheroPowerData.filter(
-//     (hero) => hero.Publisher === publisherToSearch
-//   );
-//   res.json(matchingSuperheroes);
-// });
-
-
-// Define a route to get superheroes by a specific power
-app.get('/get_superheroes_by_power/:powerKey', (req, res) => {
-  const powerKeyToSearch = req.params.powerKey;
-  const matchingSuperheroes = superheroPowerData.filter((hero) => hero[powerKeyToSearch] === 'True');
-
-  if (matchingSuperheroes.length === 0) {
-    return res.status(404).json({ error: 'No superheroes with this power found' });
-  }
-
-  res.json(matchingSuperheroes);
-});
-
-
-
-
-
-
-
-
-
-
-
-// Define a route to get all unique superhero publishers
+// Define a route to get all unique superhero publishers:  
 app.get('/get_superhero_publishers', (req, res) => {
   try {
     const uniquePublishers = getUniquePublishers(superheroInfoData);
@@ -209,7 +119,6 @@ app.get('/get_superhero_publishers', (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching unique publishers' });
   }
 });
-
 // Function to get all unique publishers from the data
 function getUniquePublishers(data) {
   const uniquePublishers = [];
@@ -223,8 +132,6 @@ function getUniquePublishers(data) {
 
 
 
-
-
 // Everything to do with lists --------------------------------------------------------------------------------
 
 
@@ -232,8 +139,6 @@ function getUniquePublishers(data) {
 const listData = JSON.parse(
   fs.readFileSync('lists.json', 'utf8') // reads the contents of the file and then parses it into a js object
 );
-
-
 
 // Create a new list with a given name
 app.post('/create_list/:listname', (req, res) => {
@@ -253,16 +158,11 @@ app.post('/create_list/:listname', (req, res) => {
   res.json(newList);
 });
 
-
-
 // Add items to a list in the json file
 app.get('/add_ids_to_list/:listname/:ids', (req, res) => {
   const {listname, ids} = req.params;
   // Check if the listname exists
-
   const idList = ids.split(','); 
-
-
   const existingList = listData.find((list) => list.listname === listname);
   if (existingList) {
     existingList.superheroes = idList; // set the new id's in that list
@@ -275,13 +175,6 @@ app.get('/add_ids_to_list/:listname/:ids', (req, res) => {
   fs.writeFileSync('lists.json', JSON.stringify(listData, null, 2));
   res.json(existingList.superheroes);
 });
-
-
-
-
-// var existingList = listData.find((list) => list.listname === "New heroes");
-// existingList.superheroes = [0,1,2]
-
 
 
 // for display list
@@ -313,7 +206,6 @@ app.delete('/delete_list/:listname', (req, res) => {
 });
  
 
-
 // Get list name from lists.json
 app.get('/get_ids_from_list/', (req, res) => {
   // Check if the listname exists
@@ -325,7 +217,6 @@ app.get('/get_ids_from_list/', (req, res) => {
   fs.writeFileSync('lists.json', JSON.stringify(listData, null, 2));
   res.json(listNames);
 });
-
 
 
 // get a list of superheroes containing both their information and their powers from some listname. 

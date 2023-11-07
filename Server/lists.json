@@ -27,5 +27,19 @@
       "331",
       "646"
     ]
+  },
+  {
+    "listname": "my new list",
+    "superheroes": []
+  },
+  {
+    "listname": "my newest list",
+    "superheroes": [
+      "undefined",
+      "3",
+      "331",
+      "646",
+      "68"
+    ]
   }
 ]
