@@ -1,4 +1,4 @@
-
+const DOMPurify = require('dompurify');
 const express = require('express'); // imports the express framework
 const app = express(); // inititalizes an instance of the express application to create routs and handles http requests
 const fs = require('fs'); // imports the node.js file system module, used to json data from a file. 

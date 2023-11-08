@@ -1,3 +1,4 @@
+
   const getInfoButton = document.getElementById('getSuperHeroInfo');
   const searchByButton = document.getElementById('searchByButton'); 
   const superherosearchedDiv = document.getElementById('superheroSearched');
@@ -15,6 +16,8 @@
   const sortBy = document.getElementById('sortBy'); 
   const sortByList = document.getElementById('sortByList'); 
   const listSort = document.getElementById('listSort'); 
+  const pattern = /^[IVXLCDM\sA-Za-z.-]+$/; // used for input sanitization, allows regular text, periods, dashes and roman numerals. 
+
 
   // getInfoButton.addEventListener('click', () => {
   //   const superheroId = document.getElementById('superheroId').value;
@@ -111,10 +114,14 @@ function sortDivsAndAppend() {
     
     const inputValue = document.getElementById('inputValue') // for the hero's name inputted
     const nValue = document.getElementById('nValue') // for the hero's name inputted
-    console.log(nValue.value); 
 
-    superherosearchedDiv.innerHTML = '';
+    if (inputValue.value == ''){
+      superherosearchedDiv.textContent = 'Enter a hero name to search for'
+    } else if (!pattern.test(inputValue.value)){
+      superherosearchedDiv.textContent = 'Invalid characters inputted'
+    } else {
 
+      superherosearchedDiv.innerHTML = '';
       fetch(`/search_superhero_ids/${inputValue.value}/${selectedValue}/${nValue.value || 1000}`)
 
           .then((response) => response.json())
@@ -236,12 +243,10 @@ function sortDivsAndAppend() {
           .catch((error) => {
               superherosearchedDiv.innerHTML = `Error: ${error.message}`;
           });
+    }
 
   }); 
 
-
-
-// Stuff for the lists
 
 // create a function called update lists created that iterates through the name of the json file to update all the options. 
 updateLists = function(){
@@ -278,9 +283,11 @@ createListButton.addEventListener('click', function(){
   
   const newListName = document.getElementById('listName'); 
   const listName = newListName.value; 
-
-
-
+  if(listName == ''){
+    resultDiv.innerHTML = 'Please enter a list name'; 
+  } else if (!pattern.test(listName)){
+    resultDiv.textContent = 'Invalid characters inputted'
+  } else {
   // to create a list
   fetch(`/create_list/${listName}`, {
     method: 'POST',
@@ -297,6 +304,8 @@ createListButton.addEventListener('click', function(){
       resultDiv.innerHTML = `Here -> Error: ${error.message}`;
     });
     updateLists(); 
+  }
+
 });
 
 
@@ -305,22 +314,29 @@ createListButton.addEventListener('click', function(){
 deleteListButton.addEventListener('click', function(){
   const listName = document.getElementById('listName'); 
   const listText = listName.value; 
-  // to create a list
-  fetch(`/delete_list/${listText}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      resultDiv.innerHTML = `List deleted`;
-    })
-    .catch((error) => {
-      resultDiv.innerHTML = `Error: ${error.message}`;
-    });
-    // to update the listnames displayed in GeneratedLists: 
-    updateLists(); 
+
+  if(listText == ''){
+    resultDiv.innerHTML = 'Please enter a list name'; 
+  } else if (!pattern.test(listText)){
+    resultDiv.textContent = 'Invalid characters inputted'
+  } else {
+
+    fetch(`/delete_list/${listText}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        resultDiv.innerHTML = `List deleted`;
+      })
+      .catch((error) => {
+        resultDiv.innerHTML = `Error: ${error.message}`;
+      });
+      // to update the listnames displayed in GeneratedLists: 
+      updateLists(); 
+  }
 });
 
 
@@ -333,6 +349,11 @@ addHeroesButton.addEventListener('click', function(){
   var namesFound = herosInput.value.split(','); 
 
 
+  if(list.value == ''){
+    addedHeroesText.innerHTML = 'Please Enter a list name: '
+  } else if (herosInput.value == ''){
+    addedHeroesText.innerHTML = 'Please Enter heroes to be added to the list: '
+  } else {
     // Create an array of promises for each fetch request
     var fetchPromises = namesFound.map(item => {
       return new Promise((resolve, reject) => {
@@ -369,6 +390,8 @@ addHeroesButton.addEventListener('click', function(){
   .catch((error) => {
     console.error('Error:', error);
   });
+
+  }
 
 });  
 
