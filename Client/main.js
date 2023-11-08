@@ -347,12 +347,15 @@ addHeroesButton.addEventListener('click', function(){
   var idList = []; 
   var idText = ''; 
   var namesFound = herosInput.value.split(','); 
+  const pattern = /[<>[\](){}]/;
 
 
   if(list.value == ''){
     addedHeroesText.innerHTML = 'Please Enter a list name: '
   } else if (herosInput.value == ''){
     addedHeroesText.innerHTML = 'Please Enter heroes to be added to the list: '
+  } else if (pattern.test(herosInput.value)){
+    addedHeroesText.innerHTML = 'Invalid characters inputted'
   } else {
     // Create an array of promises for each fetch request
     var fetchPromises = namesFound.map(item => {
