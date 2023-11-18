@@ -67,24 +67,6 @@ td {
   text-decoration: none;
 }
 
-/* #createAccount {
-  background-color: #3498db;
-  color: #fff;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-  width: 40%;
-  margin: 0 auto;
-  margin-top: 250px;
-}
-
-#createAccount button {
-  display: block;
-  width: 80%;
-  margin: 0 auto;
-  margin-top: 20px;
-} */
-
 #createAccount label {
   display: inline-block; 
   margin: 10px 0; 
@@ -133,7 +115,6 @@ td {
   background-color: #21618C; /* Change the hover color */
 }
   
-/* This is everything to do with the  ----------------------------------------------------- */
 
 
 
@@ -141,21 +122,9 @@ td {
 
 
 
+/* This is everything to do with the main hub ----------------------------------------------------- */
 
 
-
-
-
-
-
-
-
-
-
-
-
-  
-  /* Form elements */
   label {
     display: block;
     margin: 10px 0;

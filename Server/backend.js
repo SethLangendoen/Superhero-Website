@@ -7,6 +7,80 @@ const path = require('path'); // Import the 'path' module.
 const i18n = require('i18n');
 
 
+
+// Everything to do with mongodb user management --------------------------------------------------------------------------------
+
+const bodyParser = require('body-parser');
+const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser } = require('./db');
+app.use(bodyParser.json());
+connectToMongoDB(); // connects us to the mongodb when the server starts. 
+
+
+//Route for creating a new client
+app.post('/create-client', async (req, res) => {
+  try {
+    const { nickname, email, username, password, disabled } = req.body;
+
+    // Use the insertUser function from the db module to insert a client document
+    const result = await insertUser({
+      nickname,
+      email,
+      username,
+      password,
+      disabled,
+    });
+
+    console.log('Client created:', result);
+
+    res.status(201).json({ message: 'Client created successfully' });
+  } catch (error) {
+    console.error('Error creating client:', error);
+    res.status(500).json({ error: 'Internal server error', details: error.message });
+  }
+});
+
+
+
+
+
+
+// route to update a client's information. // look at this later 
+app.put('/update-client/:clientId', async (req, res) => {
+  try {
+    const clientId = req.params.clientId;
+    const { newAttribute } = req.body;
+
+    // Use the updateUser function from the db module to update a client document
+    const result = await updateUser({ _id: clientId }, { $set: { "attributes.newAttribute": newAttribute } });
+
+    console.log('Client updated:', result);
+
+    res.status(200).json({ message: 'Client updated successfully' });
+  } catch (error) {
+    console.error('Error updating client:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+// Close MongoDB connection when the server shuts down
+process.on('SIGINT', async () => {
+  await closeMongoDBConnection();
+  process.exit();
+});
+
+
+// The end of mongodb --------------------------------------------------------------------------------------------
+
+
 // used for multiple language compatibility
 // Initialize the i18n library
 i18n.configure({
