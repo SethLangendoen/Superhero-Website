@@ -41,7 +41,11 @@
     ]
   },
   {
-    "listname": "s",
-    "superheroes": []
+    "listname": "Seths list",
+    "superheroes": [
+      "646",
+      "68",
+      "0"
+    ]
   }
 ]

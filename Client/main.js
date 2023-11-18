@@ -19,47 +19,6 @@
   const pattern = /^[IVXLCDM\sA-Za-z.-]+$/; // used for input sanitization, allows regular text, periods, dashes and roman numerals. 
 
 
-  // getInfoButton.addEventListener('click', () => {
-  //   const superheroId = document.getElementById('superheroId').value;
-  //   const superheroInfoDiv = document.getElementById('superheroInfo');
-  //   const superheroPowersDiv = document.getElementById('superheroPowers');
-
-  //   // Send an HTTP GET request to the server to get superhero information
-  //   fetch(`/get_superhero_info/${superheroId}`)
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       superheroInfoDiv.innerHTML = ''; 
-  //       superheroPowersDiv.innerHTML = ''; 
-  //       // print the superheroes data
-  //       for (const key in data) {
-  //         if (data.hasOwnProperty(key)) {
-  //           superheroInfoDiv.innerHTML += `${key}: ${data[key]}<br>`;
-  //         }
-  //       }
-  //       superheroInfoDiv.innerHTML += "<br>"
-  //       // Send another request to get superhero powers based on the name
-  //       fetch(`/get_superhero_power/${data.name}`)
-  //         .then((powersResponse) => powersResponse.json())
-  //         .then((powersData) => {
-  //           for (const key in powersData) {
-  //             if (powersData.hasOwnProperty(key) && powersData[key] === "True") {
-  //                 superheroPowersDiv.innerHTML += key + "<br>";
-  //             }
-
-  //           }
-  //         })
-  //         .catch((powersError) => {
-  //           superheroPowersDiv.innerHTML = `Error: ${powersError.message}`;
-  //         });
-
-  //     })
-  //     .catch((error) => {
-  //       superheroInfoDiv.innerHTML = `Error: ${error.message}`;
-  //       superheroPowersDiv.innerHTML = ''; // Clear the superhero powers display on error.
-  //     });
-  // });
-
-
   // sorting function: 
 const sortButton = document.getElementById('sort'); 
 
@@ -101,156 +60,150 @@ function sortDivsAndAppend() {
 
 
 
+searchByButton.addEventListener('click', function(){
 
+  const valueSearched = document.getElementById('searchBy'); // for name, race or publisher. 
+  const selectedValue = valueSearched.value; 
   
-  
+  const inputValue = document.getElementById('inputValue') // for the hero's name inputted
+  const nValue = document.getElementById('nValue') // for the hero's name inputted
+
+  if (inputValue.value == ''){
+    superherosearchedDiv.textContent = 'Enter a hero name to search for'
+  } else if (!pattern.test(inputValue.value)){
+    superherosearchedDiv.textContent = 'Invalid characters inputted'
+  } else {
+
+    superherosearchedDiv.innerHTML = '';
+    fetch(`/api/open/search_superhero_ids/${inputValue.value}/${selectedValue}/${nValue.value || 1000}`)
+
+        .then((response) => response.json())
+        .then((data) => {
+
+            data.forEach((id) => {
 
 
-
-  searchByButton.addEventListener('click', function(){
-
-    const valueSearched = document.getElementById('searchBy'); // for name, race or publisher. 
-    const selectedValue = valueSearched.value; 
-    
-    const inputValue = document.getElementById('inputValue') // for the hero's name inputted
-    const nValue = document.getElementById('nValue') // for the hero's name inputted
-
-    if (inputValue.value == ''){
-      superherosearchedDiv.textContent = 'Enter a hero name to search for'
-    } else if (!pattern.test(inputValue.value)){
-      superherosearchedDiv.textContent = 'Invalid characters inputted'
-    } else {
-
-      superherosearchedDiv.innerHTML = '';
-      fetch(`/search_superhero_ids/${inputValue.value}/${selectedValue}/${nValue.value || 1000}`)
-
-          .then((response) => response.json())
-          .then((data) => {
-
-              data.forEach((id) => {
-
-
-                if (selectedValue === 'name'){
-                  
-                  fetch(`/get_superhero_info/${id}`)
-                  .then((response) => response.json())
-                  .then((data) => {
-                    // print the superheroes data
-                    const div = document.createElement('div'); 
-                    div.setAttribute('class', 'divClass'); 
-                    for (const key in data) {
-                      if (data.hasOwnProperty(key)) {
-                        const p = document.createElement('p'); 
-                        p.setAttribute('class','data-key'); 
-                        p.textContent = key + ': ' + data[key]; 
-                        div.appendChild(p); 
-                        //superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
-                      }
+              if (selectedValue === 'name'){
+                
+                fetch(`/api/open/get_superhero_info/${id}`)
+                .then((response) => response.json())
+                .then((data) => {
+                  // print the superheroes data
+                  const div = document.createElement('div'); 
+                  div.setAttribute('class', 'divClass'); 
+                  for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                      const p = document.createElement('p'); 
+                      p.setAttribute('class','data-key'); 
+                      p.textContent = key + ': ' + data[key]; 
+                      div.appendChild(p); 
+                      //superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
                     }
-                    superherosearchedDiv.appendChild(div)
-                  })
-                  .catch((powersError) => {
-                    superherosearchedDiv.innerHTML = `Error: ${powersError.message}`;
-                  });
+                  }
+                  superherosearchedDiv.appendChild(div)
+                })
+                .catch((powersError) => {
+                  superherosearchedDiv.innerHTML = `Error: ${powersError.message}`;
+                });
 
 
-                } else if (selectedValue === 'Race'){
+              } else if (selectedValue === 'Race'){
 
-                  fetch(`/get_superhero_info/${id}`)
-                  .then((response) => response.json())
-                  .then((data) => {
+                fetch(`/api/open/get_superhero_info/${id}`)
+                .then((response) => response.json())
+                .then((data) => {
 
-                    // print the superheroes data
-                    const div = document.createElement('div'); 
-                    div.setAttribute('class', 'divClass'); 
+                  // print the superheroes data
+                  const div = document.createElement('div'); 
+                  div.setAttribute('class', 'divClass'); 
 
-                    for (const key in data) {
-                      if (data.hasOwnProperty(key)) {
-                        const p = document.createElement('p'); 
-                        p.setAttribute('id','data-key'); 
-                        p.textContent = key + ': ' + data[key]; 
-                        div.appendChild(p); 
-                        //superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
-                      }
+                  for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                      const p = document.createElement('p'); 
+                      p.setAttribute('id','data-key'); 
+                      p.textContent = key + ': ' + data[key]; 
+                      div.appendChild(p); 
+                      //superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
                     }
-                    superherosearchedDiv.appendChild(div)
+                  }
+                  superherosearchedDiv.appendChild(div)
 
-                  })
-                  .catch((powersError) => {
-                    superherosearchedDiv.innerHTML = `Error: ${powersError.message}`;
-                  });
+                })
+                .catch((powersError) => {
+                  superherosearchedDiv.innerHTML = `Error: ${powersError.message}`;
+                });
 
 
-                } else if (selectedValue == 'Publisher'){
+              } else if (selectedValue == 'Publisher'){
 
-                  fetch(`/get_superhero_info/${id}`)
-                  .then((response) => response.json())
-                  .then((data) => {
+                fetch(`/api/open/get_superhero_info/${id}`)
+                .then((response) => response.json())
+                .then((data) => {
 
-                    const div = document.createElement('div'); 
-                    div.setAttribute('class', 'divClass'); 
+                  const div = document.createElement('div'); 
+                  div.setAttribute('class', 'divClass'); 
 
-                    for (const key in data) {
-                      if (data.hasOwnProperty(key)) {
-                        const p = document.createElement('p'); 
-                        p.setAttribute('class','data-key'); 
-                        p.textContent = key + ': ' + data[key]; 
-                        div.appendChild(p); 
-                        //superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
-                      }
+                  for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                      const p = document.createElement('p'); 
+                      p.setAttribute('class','data-key'); 
+                      p.textContent = key + ': ' + data[key]; 
+                      div.appendChild(p); 
+                      //superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
                     }
-                    superherosearchedDiv.appendChild(div)
+                  }
+                  superherosearchedDiv.appendChild(div)
 
-                  })
-                  .catch((powersError) => {
-                    superherosearchedDiv.innerHTML = `Error: ${powersError.message}`;
-                  });
+                })
+                .catch((powersError) => {
+                  superherosearchedDiv.innerHTML = `Error: ${powersError.message}`;
+                });
 
 
-                  
+                
 
-                } else if (selectedValue == 'power'){
-                  console.log('inside power')
-                  fetch(`/get_superhero_info/${id}`)
-                  .then((response) => response.json())
-                  .then((data) => {
+              } else if (selectedValue == 'power'){
+                console.log('inside power')
+                fetch(`/api/open/get_superhero_info/${id}`)
+                .then((response) => response.json())
+                .then((data) => {
 
-                    //the data here should contain id's of the matching superheros with matching powers to the input field
-                    // print the superheroes data 
-                    const div = document.createElement('div'); 
-                    div.setAttribute('class', 'divClass'); 
+                  //the data here should contain id's of the matching superheros with matching powers to the input field
+                  // print the superheroes data 
+                  const div = document.createElement('div'); 
+                  div.setAttribute('class', 'divClass'); 
 
-                    for (const key in data) {
-                      if (data.hasOwnProperty(key)) {
-                        const p = document.createElement('p'); 
-                        p.setAttribute('id','data-key'); 
-                        p.textContent = key + ': ' + data[key]; 
-                        div.appendChild(p); 
-                        //superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
-                      }
+                  for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                      const p = document.createElement('p'); 
+                      p.setAttribute('id','data-key'); 
+                      p.textContent = key + ': ' + data[key]; 
+                      div.appendChild(p); 
+                      //superherosearchedDiv.innerHTML += `${key}: ${data[key]}<br>`;
                     }
-                    superherosearchedDiv.appendChild(div)
+                  }
+                  superherosearchedDiv.appendChild(div)
 
-                  })
-                  .catch((error) => {
-                    superherosearchedDiv.innerHTML = `Error: ${error.message}`;
-                  });
+                })
+                .catch((error) => {
+                  superherosearchedDiv.innerHTML = `Error: ${error.message}`;
+                });
 
-                }
+              }
 
-              });
-          })
-          .catch((error) => {
-              superherosearchedDiv.innerHTML = `Error: ${error.message}`;
-          });
-    }
+            });
+        })
+        .catch((error) => {
+            superherosearchedDiv.innerHTML = `Error: ${error.message}`;
+        });
+  }
 
-  }); 
+}); 
 
 
 // create a function called update lists created that iterates through the name of the json file to update all the options. 
 updateLists = function(){
-  fetch(`/get_ids_from_list/`, {
+  fetch(`/api/open/get_ids_from_list/`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -289,7 +242,7 @@ createListButton.addEventListener('click', function(){
     resultDiv.textContent = 'Invalid characters inputted'
   } else {
   // to create a list
-  fetch(`/create_list/${listName}`, {
+  fetch(`/api/open/create_list/${listName}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -321,7 +274,7 @@ deleteListButton.addEventListener('click', function(){
     resultDiv.textContent = 'Invalid characters inputted'
   } else {
 
-    fetch(`/delete_list/${listText}`, {
+    fetch(`/api/open/delete_list/${listText}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -360,7 +313,7 @@ addHeroesButton.addEventListener('click', function(){
     // Create an array of promises for each fetch request
     var fetchPromises = namesFound.map(item => {
       return new Promise((resolve, reject) => {
-        fetch(`/get_superhero_i/${item}`)
+        fetch(`/api/open/get_superhero_i/${item}`)
           .then((response) => response.json())
           .then((data) => {
             idList.push(data.id);
@@ -379,7 +332,7 @@ addHeroesButton.addEventListener('click', function(){
   .then(() => {
     console.log("Should be full list of ids: " + idText); 
 
-    fetch(`/add_ids_to_list/${list.value}/${idText.slice(0,-1)}`)
+    fetch(`/api/open/add_ids_to_list/${list.value}/${idText.slice(0,-1)}`)
     .then((response) => response.json)
     .then((data) => {
       addedHeroesText.innerHTML = 'Successfully added heroes'; 
@@ -443,7 +396,7 @@ displayList.addEventListener('click', function(){
 
   console.log('button clicked'); 
 
-  fetch(`/get_info_from_list/${listsCreated.value}`)
+  fetch(`/api/open/get_info_from_list/${listsCreated.value}`)
   .then((response) => response.json())
   .then((data) => {
     // Process the data and display the superheroes

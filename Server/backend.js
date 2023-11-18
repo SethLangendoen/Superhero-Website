@@ -37,7 +37,7 @@ const superheroInfoData = JSON.parse(
 );
 
 // Define a route to get superhero information by ID
-app.get('/get_superhero_info/:id', (req, res) => { // defines an http get routej. req is the request object, res is the response object
+app.get('/api/open/get_superhero_info/:id', (req, res) => { // defines an http get routej. req is the request object, res is the response object
   const superheroId = req.params.id; // extracts the id parameter from the url and assigns it to superheroId
   // Find the superhero by ID
   const superhero = superheroInfoData.find( // searches heroes until it finds an id that s
@@ -50,7 +50,7 @@ app.get('/get_superhero_info/:id', (req, res) => { // defines an http get routej
 });
 
 // Define a route to get superhero information by names
-app.get('/get_superhero_i/:name', (req, res) => { // defines an http get route. req is the request object, res is the response object
+app.get('/api/open/get_superhero_i/:name', (req, res) => { // defines an http get route. req is the request object, res is the response object
   const superheroName = req.params.name; 
   const superhero = superheroInfoData.find(
     (hero) => hero.name.toLowerCase() === superheroName.toLowerCase()
@@ -62,7 +62,7 @@ app.get('/get_superhero_i/:name', (req, res) => { // defines an http get route. 
 });
 
 // return a list of id's based on the user's search field, pattern an n searches
-app.get('/search_superhero_ids/:field/:pattern/:n', (req, res) => {
+app.get('/api/open/search_superhero_ids/:field/:pattern/:n', (req, res) => {
   const { field, pattern, n } = req.params;
   //const superheroData = isPowerField(field) ? superheroPowerData : superheroInfoData;
   var superheroData; 
@@ -111,7 +111,7 @@ const superheroPowerData = JSON.parse(
 
 
 // Define a route to get all unique superhero publishers:  
-app.get('/get_superhero_publishers', (req, res) => {
+app.get('/api/open/get_superhero_publishers', (req, res) => {
   try {
     const uniquePublishers = getUniquePublishers(superheroInfoData);
     res.json(uniquePublishers);
@@ -141,7 +141,7 @@ const listData = JSON.parse(
 );
 
 // Create a new list with a given name
-app.post('/create_list/:listname', (req, res) => {
+app.post('/api/open/create_list/:listname', (req, res) => {
   const listname = req.params.listname;
   // Check if the listname already exists
   const existingList = listData.find((list) => list.listname === listname);
@@ -159,7 +159,7 @@ app.post('/create_list/:listname', (req, res) => {
 });
 
 // Add items to a list in the json file
-app.get('/add_ids_to_list/:listname/:ids', (req, res) => {
+app.get('/api/open/add_ids_to_list/:listname/:ids', (req, res) => {
   const {listname, ids} = req.params;
   // Check if the listname exists
   const idList = ids.split(','); 
@@ -179,7 +179,7 @@ app.get('/add_ids_to_list/:listname/:ids', (req, res) => {
 
 // for display list
 // Get id's from list for a given listname
-app.get('/get_ids_from_list/:listname', (req, res) => {
+app.get('/api/open/get_ids_from_list/:listname', (req, res) => {
   const listname = req.params.listname;
   // Check if the listname exists
   const existingList = listData.find((list) => list.listname === listname);
@@ -193,7 +193,7 @@ app.get('/get_ids_from_list/:listname', (req, res) => {
 
 
 // delete a list
-app.delete('/delete_list/:listname', (req, res) => {
+app.delete('/api/open/delete_list/:listname', (req, res) => {
   const listname = req.params.listname; 
   const existingListIndex = listData.findIndex((list) => list.listname === listname);
   if (existingListIndex === -1) {
@@ -207,7 +207,7 @@ app.delete('/delete_list/:listname', (req, res) => {
  
 
 // Get list name from lists.json
-app.get('/get_ids_from_list/', (req, res) => {
+app.get('/api/open/get_ids_from_list/', (req, res) => {
   // Check if the listname exists
   const listNames = []
   for (var item of listData){
@@ -220,7 +220,7 @@ app.get('/get_ids_from_list/', (req, res) => {
 
 
 // get a list of superheroes containing both their information and their powers from some listname. 
-app.get('/get_info_from_list/:listname', (req, res) => {
+app.get('/api/open/get_info_from_list/:listname', (req, res) => {
   const listname = req.params.listname;
   // Check if the listname exists
   const existingList = listData.find((list) => list.listname === listname);
