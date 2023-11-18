@@ -1,0 +1,13 @@
+// This request.rest file is used to test requests inside of vs code, makes testing easier. 
+
+// ### three hashes are used to separate request tests. 
+// format for requests: GET http://localhost:3000
+
+
+GET http://localhost:3000/api/open/get_superhero_publishers
+
+
+###
+
+
+

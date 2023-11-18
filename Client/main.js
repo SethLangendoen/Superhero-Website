@@ -19,14 +19,32 @@
   const pattern = /^[IVXLCDM\sA-Za-z.-]+$/; // used for input sanitization, allows regular text, periods, dashes and roman numerals. 
 
 
+// I need to create a function that 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // sorting function: 
 const sortButton = document.getElementById('sort'); 
 
 sortButton.addEventListener('click', function(){
   sortDivsAndAppend();
 })
-
-
 
 function sortDivsAndAppend() {
   // Get an array of the div elements
