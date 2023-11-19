@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SethLangendoen/se3316-lab3.git"
+    "url": "git+https://github.com/SethLangendoen/se3316-slangend-lab4.git"
   },
   "author": "",
   "license": "ISC",
@@ -17,11 +17,16 @@
   },
   "homepage": "https://github.com/SethLangendoen/se3316-lab3#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dompurify": "^3.0.6",
     "express": "^4.18.2",
+    "express-flash": "^0.0.2",
+    "express-session": "^1.17.3",
     "i18n": "^0.15.1",
     "mongodb": "^6.3.0",
     "nodemailer": "^6.9.7",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
     "save": "^2.9.0"
   }
 }

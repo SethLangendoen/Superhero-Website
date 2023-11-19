@@ -5,6 +5,57 @@ const fs = require('fs'); // imports the node.js file system module, used to jso
 const { join } = require('path');
 const path = require('path'); // Import the 'path' module.
 const i18n = require('i18n');
+const bcrypt = require('bcrypt'); 
+const passport = require('passport'); 
+const initializePassport = require("./passport-config")
+// from the WDS tutorial: 
+
+// allows us to access form values inside the request variable. 
+app.use(express.urlencoded({ extended: false})); 
+
+// I am using bcrypt to hash and compare passwords on this site to ensure site security. 
+app.post('/createAccount', async (req, res) => {
+  try{
+    const hashedPassword = await bcrypt.hash(req.body.password, 10) // 10 describes the security intensity. 10 is quick as well.  
+    const { nickname, email, username, password } = req.body;
+    disabled = false; 
+
+    // Use the insertUser function from the db module to insert a client document
+    const result = await insertUser({
+      nickname,
+      email,
+      username,
+      hashedPassword,
+      disabled,
+    });
+  
+    res.status(201).json({ message: 'Client created successfully' });
+  }catch (error) {
+
+    //YOU SHOULD TALK TO A TA ABOUT THIS!
+
+
+    // I cannot have both of these calls here. 
+    //res.status(500).json({ error: 'Internal server error', details: error.message });
+    res.redirect("/createAccount.html"); 
+    // for some reason I am catching an error but I am successfully creating an account. 
+  }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -17,27 +68,24 @@ connectToMongoDB(); // connects us to the mongodb when the server starts.
 
 
 //Route for creating a new client
-app.post('/create-client', async (req, res) => {
-  try {
-    const { nickname, email, username, password, disabled } = req.body;
+// app.post('/create-client', async (req, res) => {
+//   try {
+//     const { nickname, email, username, password, disabled } = req.body;
 
-    // Use the insertUser function from the db module to insert a client document
-    const result = await insertUser({
-      nickname,
-      email,
-      username,
-      password,
-      disabled,
-    });
+//     // Use the insertUser function from the db module to insert a client document
+//     const result = await insertUser({
+//       nickname,
+//       email,
+//       username,
+//       password,
+//       disabled,
+//     });
 
-    console.log('Client created:', result);
-
-    res.status(201).json({ message: 'Client created successfully' });
-  } catch (error) {
-    console.error('Error creating client:', error);
-    res.status(500).json({ error: 'Internal server error', details: error.message });
-  }
-});
+//     res.status(201).json({ message: 'Client created successfully' });
+//   } catch (error) {
+//     res.status(500).json({ error: 'Internal server error', details: error.message });
+//   }
+// });
 
 
 

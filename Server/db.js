@@ -30,12 +30,12 @@ async function insertUser(user) {
         const result = await usersCollection.insertOne(user);
 
         if (!result.result.ok || !result.ops || result.ops.length === 0) {
-            throw new Error('Failed to insert user', result.result);
+            throw new Error('Insertion Failure', result.result);
         }
 
         return result.ops[0];
     } catch (error) {
-        throw new Error('Failed to insert user', error);
+        throw new Error('Failed to insert', error);
     }
 }
 

@@ -18,7 +18,7 @@
         </tr>
     </table>
 
-	<div id="createAccount">
+	<!-- <div id="createAccount">
 		<div class="form-group">
 			<label for="nickname">Nickname:</label>
 			<input type="text" id="nickname">
@@ -40,7 +40,37 @@
 		</div>
 	
 		<button id='createAccountButton'>Create Account</button>
-	</div>
+	</div> -->
+
+
+	<!-- Name in the input variables alows us to access the their values in the post request.  -->
+	<form id="createAccount" action = '/createAccount' method = "POST" >
+		<div class="form-group">
+			<label for="nickname">Nickname:</label>
+			<input type="text" id="nickname" name = 'nickname'>
+		</div>
+	
+		<div class="form-group">
+			<label for="email">Email:</label>
+			<input type="email" id="email" name = "email">
+		</div>
+	
+		<div class="form-group">
+			<label for="username">Username:</label>
+			<input type="text" id="username" name ='username'>
+		</div>
+	
+		<div class="form-group">
+			<label for="password">Password:</label>
+			<input type="password" id="password" name ="password">
+		</div>
+	
+		<button id='createAccountButton'>Create Account</button>
+		<p id = notification></p>
+
+	</form>
+
+
 	
 
 	<script src = createAccount.js></script>
