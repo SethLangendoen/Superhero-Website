@@ -3,7 +3,8 @@
 // module you create clients there. 
 
 
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectID } = require('mongodb');
+
 
 const url = 'mongodb://localhost:27017';
 const dbName = 'mydatabase';
@@ -49,11 +50,24 @@ async function updateUser(query, update) {
 
 
 
+async function findUserByEmail(email) {
+  const usersCollection = client.db(dbName).collection('users');
+  return await usersCollection.findOne({ email });
+  
+}
+
+
+
+// async function findUserById(id) {
+//   const usersCollection = client.db(dbName).collection('users');
+//   return await usersCollection.findOne({ _id: new ObjectID(id) });
+// }
+
+
 async function closeMongoDBConnection() {
   await client.close();
   console.log('Closed MongoDB connection');
 }
-
 
 
 module.exports = {
@@ -62,4 +76,5 @@ module.exports = {
 	getClient,
 	insertUser,
 	updateUser,
+  findUserByEmail
 };

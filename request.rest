@@ -11,3 +11,8 @@ GET http://localhost:3000/api/open/get_superhero_publishers
 
 POST http://localhost:3000/create-client
 
+###
+
+POST http://localhost:3000/login
+
+

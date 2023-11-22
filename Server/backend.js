@@ -1,3 +1,8 @@
+// loads in our environment variables and sets them inside of process.env
+// if (process.env.NODE_ENV !== 'production'){
+//   require("dotenv").config(); 
+// }
+
 const DOMPurify = require('dompurify');
 const express = require('express'); // imports the express framework
 const app = express(); // inititalizes an instance of the express application to create routs and handles http requests
@@ -6,14 +11,83 @@ const { join } = require('path');
 const path = require('path'); // Import the 'path' module.
 const i18n = require('i18n');
 const bcrypt = require('bcrypt'); 
-const passport = require('passport'); 
-const initializePassport = require("./passport-config")
-// from the WDS tutorial: 
+//const passport = require('passport'); 
+const flash = require('express-flash'); 
+const session = require('express-session'); 
+const bodyParser = require('body-parser');
+const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser, findUserByEmail } = require('./db');
 
 // allows us to access form values inside the request variable. 
+app.use(flash()); 
+// app.use(session({
+//   secret: process.env.SESSION_SECRET, 
+//   resave: false, 
+//   saveUninitialized: false
+// }))
+// app.use(passport.initialize()); 
+// app.use(passport.session()); 
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false})); 
 
-// I am using bcrypt to hash and compare passwords on this site to ensure site security. 
+
+
+// jwt tutorial---------------------------------
+
+const jwt = require('jsonwebtoken')
+app.use(express.json())
+
+
+// Secret key for JWT (replace this with a strong secret in production)
+const jwtSecret = 'your-secret-key';
+
+
+// this is how to use the middleware
+//app.get('/protected', authenticateJWT, (req, res) => {
+
+// Middleware to extract and verify JWT
+const authenticateJWT = (req, res, next) => {
+  const token = req.header('Authorization');
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  jwt.verify(token, jwtSecret, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+    req.user = user;
+    next();
+  });
+};
+
+
+
+// Route to generate a JWT upon successful login
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  const user = await findUserByEmail(email);
+
+  if (user && await bcrypt.compare(password, user.hashedPassword)) {
+    const token = jwt.sign({ email: user.email }, jwtSecret, { expiresIn: '1h' });
+    // res.json({ token });
+    res.redirect('/Index.html'); 
+
+  } else {
+    res.status(401).json({ message: 'Invalid credentials' });
+  }
+});
+
+
+
+
+
+
+
+// const initializePassport = require("./passport-config"); 
+
+
+
+
+// I am using bcrypt 
 app.post('/createAccount', async (req, res) => {
   try{
     const hashedPassword = await bcrypt.hash(req.body.password, 10) // 10 describes the security intensity. 10 is quick as well.  
@@ -28,13 +102,9 @@ app.post('/createAccount', async (req, res) => {
       hashedPassword,
       disabled,
     });
-  
     res.status(201).json({ message: 'Client created successfully' });
   }catch (error) {
-
     //YOU SHOULD TALK TO A TA ABOUT THIS!
-
-
     // I cannot have both of these calls here. 
     //res.status(500).json({ error: 'Internal server error', details: error.message });
     res.redirect("/createAccount.html"); 
@@ -59,11 +129,16 @@ app.post('/createAccount', async (req, res) => {
 
 
 
+
+
+
+
+
+
+
 // Everything to do with mongodb user management --------------------------------------------------------------------------------
 
-const bodyParser = require('body-parser');
-const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser } = require('./db');
-app.use(bodyParser.json());
+
 connectToMongoDB(); // connects us to the mongodb when the server starts. 
 
 

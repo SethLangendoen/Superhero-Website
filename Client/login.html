@@ -19,16 +19,32 @@
     </table>
 
 
+	<div id="loginOptions">
+		<button onclick="toggleLoginForm('adminForm')">Log in as Administrator</button>
+		<form id="adminForm" action="/login" method="POST" style="display: none;">
+		  <label for="adminEmail">Email:</label>
+		  <input type="email" id="adminEmail" name="email">
+		  <label for="adminPassword">Password:</label>
+		  <input type="password" id="adminPassword" name="password">
+		  <button>Log in</button>
+		</form>
+	
+		<button onclick="toggleLoginForm('userForm')">Log in as User</button>
+		<form id="userForm" action="/login" method="POST" style="display: none;">
+		  <label for="userEmail">Email:</label>
+		  <input type="email" id="userEmail" name="email">
+		  <label for="userPassword">Password:</label>
+		  <input type="password" id="userPassword" name="password">
+		  <button>Log in</button>
+		</form>
+	
+		<a id='guestLoginLink' href='Index.html'><button>Use as Guest</button></a>
+		<p>Want to create an account? <a href='createAccount.html'>Click here!</a></p>
+	  </div>
 
-	<div id = loginOptions>
-		<button>Log in as Administrator </button>
-		<button>Log in as User </button>
-		<a id = 'guestLoginLink' href = 'Index.html'><button>Use as Guest </button></a>
-		<p>Want to create an account? <a href = createAccount.html>Click here!</a></p>
-	</div>
 
-
-
+	<script src="login.js"></script>
+	<script src="createAccount.js"></script>
 	<script src="main.js"></script>
 </body>
 </html>
