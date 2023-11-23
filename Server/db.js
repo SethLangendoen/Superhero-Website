@@ -53,15 +53,7 @@ async function updateUser(query, update) {
 async function findUserByEmail(email) {
   const usersCollection = client.db(dbName).collection('users');
   return await usersCollection.findOne({ email });
-  
 }
-
-
-
-// async function findUserById(id) {
-//   const usersCollection = client.db(dbName).collection('users');
-//   return await usersCollection.findOne({ _id: new ObjectID(id) });
-// }
 
 
 async function closeMongoDBConnection() {

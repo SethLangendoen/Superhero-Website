@@ -1,8 +1,3 @@
-// loads in our environment variables and sets them inside of process.env
-// if (process.env.NODE_ENV !== 'production'){
-//   require("dotenv").config(); 
-// }
-
 const DOMPurify = require('dompurify');
 const express = require('express'); // imports the express framework
 const app = express(); // inititalizes an instance of the express application to create routs and handles http requests
@@ -16,16 +11,11 @@ const flash = require('express-flash');
 const session = require('express-session'); 
 const bodyParser = require('body-parser');
 const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser, findUserByEmail } = require('./db');
-
+require('dotenv').config();
+const crypto = require('crypto');
+const transporter = require('./emailConfig'); // to be used for email configuration. 
 // allows us to access form values inside the request variable. 
 app.use(flash()); 
-// app.use(session({
-//   secret: process.env.SESSION_SECRET, 
-//   resave: false, 
-//   saveUninitialized: false
-// }))
-// app.use(passport.initialize()); 
-// app.use(passport.session()); 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false})); 
 
@@ -37,8 +27,8 @@ const jwt = require('jsonwebtoken')
 app.use(express.json())
 
 
-// Secret key for JWT (replace this with a strong secret in production)
-const jwtSecret = 'your-secret-key';
+// using the secret key from an environment file for extra security. 
+const jwtSecret = process.env.JWT_SECRET || 'thiscouldbethesecrettoo';
 
 
 // this is how to use the middleware
@@ -59,55 +49,107 @@ const authenticateJWT = (req, res, next) => {
   });
 };
 
-
+// creating an email saved variable to be used later. 
+emailSaved= ''; 
 
 // Route to generate a JWT upon successful login
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await findUserByEmail(email);
-
+  emailSaved = email; 
   if (user && await bcrypt.compare(password, user.hashedPassword)) {
     const token = jwt.sign({ email: user.email }, jwtSecret, { expiresIn: '1h' });
-    // res.json({ token });
     res.redirect('/Index.html'); 
-
   } else {
-    res.status(401).json({ message: 'Invalid credentials' });
+    res.redirect('/login.html'); 
+    //res.status(401).json({ message: 'Invalid credentials' });
   }
 });
 
 
 
+app.get('/getCredentials', authenticateJWT, async (req,res) => {
+  const user = await findUserByEmail(emailUsed); 
+  if (user){
+    res(user); 
+  } else {
+    res.status(401).json({ message: 'No user found'});
+  }
+})
 
 
 
 
-// const initializePassport = require("./passport-config"); 
 
+// used for the email verification token. 
+const generateRandomToken = function(){
+  return crypto.randomBytes(20).toString('hex');
+};
 
-
-
-// I am using bcrypt 
 app.post('/createAccount', async (req, res) => {
   try{
     const hashedPassword = await bcrypt.hash(req.body.password, 10) // 10 describes the security intensity. 10 is quick as well.  
-    const { nickname, email, username, password } = req.body;
-    disabled = false; 
+    const { nickname, email} = req.body;
+    disabled = false; // the admin can disable accounts using this. 
+    isVerified = false; // will be used to determine if the user's email has been verified. 
+    token = generateRandomToken();
 
-    // Use the insertUser function from the db module to insert a client document
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Email Verification',
+      text: `Click the following link to verify your email: http://localhost:3000/${token}`,
+    }
+  
+      // try {
+      //   const info = await transporter.sendMail(mailOptions);
+      //   console.log('Email sent:', info.response);
+      // } catch (error) {
+      //   console.error('Email sending failed:', error);
+      // }
+
+      // sending the verification email using their email and token
+      // await sendVerificationEmail(email, token); 
+      await transporter.sendMail(mailOptions); 
+
+
+    // if(findUserByEmail(email) == null){ // no user exists in the db so we insert a user. 
     const result = await insertUser({
       nickname,
       email,
-      username,
       hashedPassword,
       disabled,
+      isVerified, 
+      token
     });
-    res.status(201).json({ message: 'Client created successfully' });
+    //   res.status(201).json({ message: 'Client created successfully' });
+    // } else { // a user with that email already exists in the db
+    //   res.status(201).json({ message: 'Client already exists' });
+    // }
+
+    //   const mailOptions = {
+    //     from: process.env.EMAIL_USER,
+    //     to: email,
+    //     subject: 'Email Verification',
+    //     text: `Click the following link to verify your email: http://localhost:3000/${token}`,
+    //   }
+    
+    // // try {
+    // //   const info = await transporter.sendMail(mailOptions);
+    // //   console.log('Email sent:', info.response);
+    // // } catch (error) {
+    // //   console.error('Email sending failed:', error);
+    // // }
+
+    // // sending the verification email using their email and token
+    // // await sendVerificationEmail(email, token); 
+    // await transporter.sendMail(mailOptions); 
+    // Use the insertUser function from the db module to insert a client document
   }catch (error) {
     //YOU SHOULD TALK TO A TA ABOUT THIS!
     // I cannot have both of these calls here. 
-    //res.status(500).json({ error: 'Internal server error', details: error.message });
-    res.redirect("/createAccount.html"); 
+    res.status(500).json({ error: 'Internal server error', details: error.message });
+    //res.redirect("/createAccount.html"); 
     // for some reason I am catching an error but I am successfully creating an account. 
   }
 })
@@ -140,30 +182,6 @@ app.post('/createAccount', async (req, res) => {
 
 
 connectToMongoDB(); // connects us to the mongodb when the server starts. 
-
-
-//Route for creating a new client
-// app.post('/create-client', async (req, res) => {
-//   try {
-//     const { nickname, email, username, password, disabled } = req.body;
-
-//     // Use the insertUser function from the db module to insert a client document
-//     const result = await insertUser({
-//       nickname,
-//       email,
-//       username,
-//       password,
-//       disabled,
-//     });
-
-//     res.status(201).json({ message: 'Client created successfully' });
-//   } catch (error) {
-//     res.status(500).json({ error: 'Internal server error', details: error.message });
-//   }
-// });
-
-
-
 
 
 

@@ -1,4 +1,3 @@
-
   const getInfoButton = document.getElementById('getSuperHeroInfo');
   const searchByButton = document.getElementById('searchByButton'); 
   const superherosearchedDiv = document.getElementById('superheroSearched');
@@ -17,23 +16,35 @@
   const sortByList = document.getElementById('sortByList'); 
   const listSort = document.getElementById('listSort'); 
   const pattern = /^[IVXLCDM\sA-Za-z.-]+$/; // used for input sanitization, allows regular text, periods, dashes and roman numerals. 
+  const loginLink = document.getElementById('login'); 
+  const loggedInAs = document.getElementById('loggedInAs'); 
 
+  // const { json } = require("express");
 
-// I need to create a function that 
-
-
-
-
-
-
+// I need some way of getting the user's nickname based off of who is logged in. 
 
 
 
+if (window.location.pathname === '/Index.html') {
+  console.log("hm");  
 
 
+  // Check if the user is authenticated and perform the fetch request
+  fetch('/getCredentials')
+      .then((response) => response.json())
+      .then((data) => {
+        // if(data.nickname != undefined){
+        //   loginLink.style.display = "none"
+        //   loggedInAs.innerHTML = "logged in as " + data.nickname;
+        //   loggedInAs.style.display = "block"; // show loggedInAs
 
-
-
+        // } else {
+        //   loggedInAs.style.display = "none"; // hide loggedInAs
+        //   loginLink.innerHTML = "Login";
+        //   loginLink.style.display = "block"; // show loginLink
+        // }
+      });
+}
 
 
 

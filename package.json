@@ -27,6 +27,7 @@
     "i18n": "^0.15.1",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.3.0",
+    "mongoose": "^8.0.1",
     "nodemailer": "^6.9.7",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
