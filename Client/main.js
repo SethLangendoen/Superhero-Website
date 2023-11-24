@@ -25,26 +25,26 @@
 
 
 
-if (window.location.pathname === '/Index.html') {
-  console.log("hm");  
+// if (window.location.pathname === '/Index.html') {
+//   console.log("hm");  
 
 
-  // Check if the user is authenticated and perform the fetch request
-  fetch('/getCredentials')
-      .then((response) => response.json())
-      .then((data) => {
-        // if(data.nickname != undefined){
-        //   loginLink.style.display = "none"
-        //   loggedInAs.innerHTML = "logged in as " + data.nickname;
-        //   loggedInAs.style.display = "block"; // show loggedInAs
+//   // Check if the user is authenticated and perform the fetch request
+//   fetch('/getCredentials')
+//       .then((response) => response.json())
+//       .then((data) => {
+//         // if(data.nickname != undefined){
+//         //   loginLink.style.display = "none"
+//         //   loggedInAs.innerHTML = "logged in as " + data.nickname;
+//         //   loggedInAs.style.display = "block"; // show loggedInAs
 
-        // } else {
-        //   loggedInAs.style.display = "none"; // hide loggedInAs
-        //   loginLink.innerHTML = "Login";
-        //   loginLink.style.display = "block"; // show loginLink
-        // }
-      });
-}
+//         // } else {
+//         //   loggedInAs.style.display = "none"; // hide loggedInAs
+//         //   loginLink.innerHTML = "Login";
+//         //   loginLink.style.display = "block"; // show loginLink
+//         // }
+//       });
+// }
 
 
 

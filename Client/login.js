@@ -1,18 +1,55 @@
-
-// Example login.js
-function toggleLoginForm(formId) {
-	var form = document.getElementById(formId);
-	var otherForms = document.querySelectorAll('form[id^="Form"]:not(#' + formId + ')');
-
-	// Hide other forms
-	otherForms.forEach(function (otherForm) {
-		otherForm.style.display = 'none';
-	});
-
-	// Toggle the visibility of the selected form
-	form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
-}
+const notification = document.getElementById("notification"); 
+const goButton = document.getElementById("goButton")
 
 
+goButton.addEventListener('click', function(){
+	const email = document.getElementById('userEmail').value;
+	const password = document.getElementById('userPassword').value;
+	// now we are fetching the /login route and putting the values in ourselves. 
+	
+	if(email == ''){
+		notification.innerHTML = 'Please enter an email'; 
+	} // here needs to be something to ensure the email in in valid format before moving on to password logic. 
+	
+	
+	else if (password == ''){
+		notification.innerHTML = 'Please enter a password'; 
+	} else {
+		fetch('/login', {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ email, password }),
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.key === 'notVerified'){
+			  notification.innerHTML = 'You must verify your account before logging in'; 
+			} else if (data.key === 'incorrectCredentials'){
+			  notification.innerHTML = 'Your email or password is incorrect'; 
+			} else if (data.key === 'success'){
+				window.location.href = '/Index.html';
+			}
+		  })
+	}
+})
 
+
+
+// fetch('/login', {
+// 	method: 'POST',
+// 	headers: {
+// 	'Content-Type': 'application/json',
+// 	},
+// 	body: JSON.stringify({ email, password }),
+// })
+// .then(response => response.json())
+// .then((key) => {
+// if (key === 'notVerified'){
+// 	notification.innerHTML = 'You must verify your account before logging in'; 
+// } else if (key === 'incorrectCredentials'){
+// 	notification.innerHTML = 'Your email or password is incorrect'; 
+// }
+// })
 

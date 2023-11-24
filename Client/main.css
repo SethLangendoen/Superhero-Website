@@ -12,13 +12,14 @@ body {
 
 #loginOptions {
   background-color: #3498db; 
-  color: #fff; 
+  color: rgb(255, 255, 255); 
   padding: 10px; 
   border-radius: 10px; 
   text-align: center; 
   width: 40%;
   margin: 0 auto;
   margin-top: 200px; 
+
 }
 
 #loginOptions button {             
@@ -54,6 +55,26 @@ td {
   font-weight: bold;
 }
 
+.credentials {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+}
+
+.credentials input {
+  width: 60%;
+  margin-right: 10px;
+}
+
+.credentials label {
+  width: 100px;
+  box-sizing: border-box; 
+}
+
+
+
 #loginLink{
   text-decoration: none;
   color: white; 
@@ -67,13 +88,14 @@ td {
   text-decoration: none;
 }
 
-#goButton{
+/* #goButton{
   background-color: rgb(24, 169, 24); 
+
 }
 #goButton:hover{
   background-color: rgb(62, 241, 62); 
 
-}
+} */
 
 #createAccount label {
   display: inline-block; 
@@ -87,10 +109,6 @@ td {
   margin-left: 30px; 
   width: 300px;
 }
-
-
-
-
 
 #createAccount {
   background-color: #3498db;
@@ -112,19 +130,8 @@ td {
   display: block;
   width: 80%;
   margin: 0 auto;
-  margin-top: 20px;
 }
 
-#createAccountButton:disabled {
-  background-color: grey;
-  cursor: not-allowed; /* Change cursor to not-allowed when disabled */
-}
-
-/* Apply styles on button hover (when not disabled) */
-#createAccountButton:not(:disabled):hover {
-  background-color: #21618C; /* Change the hover color */
-}
-  
 
 #createAccountBgImage{
   position: fixed;

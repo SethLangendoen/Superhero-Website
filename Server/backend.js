@@ -50,34 +50,41 @@ const authenticateJWT = (req, res, next) => {
   });
 };
 
-// creating an email saved variable to be used later. 
-emailSaved= ''; 
+
 
 // Route to generate a JWT upon successful login
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await findUserByEmail(email);
-  emailSaved = email; 
-  if (user && await bcrypt.compare(password, user.hashedPassword)) {
-    jwt.sign({ email: user.email }, jwtSecret, { expiresIn: '1h' });
-    res.redirect('/Index.html'); 
-  } else {
-    res.status(200).json({ message: 'Login credentials incorrect', user });
-    // res.redirect('/login.html'); 
-    //res.status(401).json({ message: 'Invalid credentials' });
+  if(user){
+    if (await bcrypt.compare(password, user.hashedPassword)) {
+      if (user.isVerified === true){
+        const token = jwt.sign({ email: user.email }, jwtSecret, { expiresIn: '1h' });
+        res.json({ key: 'success', token }); 
+
+      } else {
+        res.json({key: 'notVerified'})
+      }
+    } else { // password incorrect
+      res.json({key: 'incorrectCredentials'})
+    }
+  }
+ else { // email incorrect
+    res.json({key: 'incorrectCredentials'})
   }
 });
 
 
 
-app.get('/getCredentials', authenticateJWT, async (req,res) => {
-  const user = await findUserByEmail(emailUsed); 
-  if (user){
-    res(user); 
-  } else {
-    res.status(401).json({ message: 'No user found'});
-  }
-})
+
+// app.get('/getCredentials', authenticateJWT, async (req,res) => {
+//   const user = await findUserByEmail(emailUsed); 
+//   if (user){
+//     res(user); 
+//   } else {
+//     res.status(401).json({ message: 'No user found'});
+//   }
+// })
 
 
 
@@ -90,44 +97,44 @@ const generateRandomToken = function(){
 
 app.post('/createAccount', async (req, res) => {
   try{
-    const hashedPassword = await bcrypt.hash(req.body.password, 10) // 10 describes the security intensity. 10 is quick as well.  
-    const { nickname, email} = req.body;
+    const { nicknameInput , emailInput, passwordInput} = req.body;
+
+    const hashedPassword = await bcrypt.hash(passwordInput, 10) // 10 describes the security intensity. 10 is quick as well.  
     disabled = false; // the admin can disable accounts using this. 
     isVerified = false; // will be used to determine if the user's email has been verified. 
     token = generateRandomToken();
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Email Verification',
-      text: `Click the following link to verify your email: http://localhost:3000/verify/${token}`,
-    }
-
-    // sending the verification email using their email and token
-    await transporter.sendMail(mailOptions); // YOU STILL NEED TO SET isVerified TO TRUE AFTER THEY CLICK THE LINK
-
     // if(findUserByEmail(email) == null){ // no user exists in the db so we insert a user. 
     const result = await insertUser({
-      nickname,
-      email,
+      nicknameInput,
+      emailInput,
       hashedPassword,
       disabled,
       isVerified, 
       token
     });
-    //   res.status(201).json({ message: 'Client created successfully' });
-    // } else { // a user with that email already exists in the db
-    //   res.status(201).json({ message: 'Client already exists' });
-    // }
+
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: emailInput,
+      subject: 'Email Verification',
+      text: `Click the following link to verify your email: http://localhost:3000/verify/${token}`,
+    }
+
+    // sending the verification email using their email and token
+    await transporter.sendMail(mailOptions);
 
   }catch (error) {
-    //YOU SHOULD TALK TO A TA ABOUT THIS!
-    // I cannot have both of these calls here. 
-    res.status(500).json({ error: 'Internal server error', details: error.message });
-    //res.redirect("/createAccount.html"); 
-    // for some reason I am catching an error but I am successfully creating an account. 
+
+    res.json({ key: 'success'}); 
+
   }
 })
+
+
+
+
 
 
 // this route listens for when a user clicks on the email verifictaion link. 

@@ -21,7 +21,8 @@
 
 
 	<!-- Name in the input variables alows us to access the their values in the post request.  -->
-	<form id="createAccount" action = '/createAccount' method = "POST" >
+	<!-- <form id="createAccount" action = '/createAccount' method = "POST" > -->
+	<div id = "createAccount">
 		<div class="form-group">
 			<label for="nickname">Nickname:</label>
 			<input type="text" id="nickname" name = 'nickname'>
@@ -37,11 +38,11 @@
 			<label for="password">Password:</label>
 			<input type="password" id="password" name ="password">
 		</div>
-	
-		<button id='createAccountButton'>Create Account</button>
-		<p id = notification></p>
+		<p id = noti></p>
 
-	</form>
+		<button id='createAccountButton'>Create Account</button>
+	</div>
+	<!-- </form> -->
 
 
 	
