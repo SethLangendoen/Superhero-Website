@@ -24,6 +24,8 @@ function getClient() {
 	return client;
 }
 
+
+
 async function insertUser(user) {
     const usersCollection = client.db(dbName).collection('users');
     
@@ -31,7 +33,7 @@ async function insertUser(user) {
         const result = await usersCollection.insertOne(user);
 
         if (!result.result.ok || !result.ops || result.ops.length === 0) {
-            throw new Error('Insertion Failure', result.result);
+            //throw new Error('Insertion Failure', result.result);
         }
 
         return result.ops[0];
@@ -42,10 +44,9 @@ async function insertUser(user) {
 
 
 
-async function updateUser(query, update) {
-	const usersCollection = client.db(dbName).collection('users');
-	const result = await usersCollection.updateOne(query, { $set: update });
-	return result.modifiedCount;
+async function updateUser(user, update) {
+  const usersCollection = client.db(dbName).collection('users');
+   await usersCollection.updateOne(user, update);
 }
 
 
@@ -54,6 +55,12 @@ async function findUserByEmail(email) {
   const usersCollection = client.db(dbName).collection('users');
   return await usersCollection.findOne({ email });
 }
+
+async function findUserByToken(token) {
+  const usersCollection = client.db(dbName).collection('users');
+  return await usersCollection.findOne({ token });
+}
+
 
 
 async function closeMongoDBConnection() {
@@ -68,5 +75,6 @@ module.exports = {
 	getClient,
 	insertUser,
 	updateUser,
-  findUserByEmail
+  findUserByEmail, 
+  findUserByToken
 };

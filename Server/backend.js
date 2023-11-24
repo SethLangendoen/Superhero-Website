@@ -10,7 +10,7 @@ const bcrypt = require('bcrypt');
 const flash = require('express-flash'); 
 const session = require('express-session'); 
 const bodyParser = require('body-parser');
-const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser, findUserByEmail } = require('./db');
+const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser, findUserByEmail, findUserByToken } = require('./db');
 require('dotenv').config();
 const crypto = require('crypto');
 const transporter = require('./emailConfig'); // to be used for email configuration. 
@@ -18,6 +18,7 @@ const transporter = require('./emailConfig'); // to be used for email configurat
 app.use(flash()); 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false})); 
+const router = express.Router();
 
 
 
@@ -58,10 +59,11 @@ app.post('/login', async (req, res) => {
   const user = await findUserByEmail(email);
   emailSaved = email; 
   if (user && await bcrypt.compare(password, user.hashedPassword)) {
-    const token = jwt.sign({ email: user.email }, jwtSecret, { expiresIn: '1h' });
+    jwt.sign({ email: user.email }, jwtSecret, { expiresIn: '1h' });
     res.redirect('/Index.html'); 
   } else {
-    res.redirect('/login.html'); 
+    res.status(200).json({ message: 'Login credentials incorrect', user });
+    // res.redirect('/login.html'); 
     //res.status(401).json({ message: 'Invalid credentials' });
   }
 });
@@ -98,20 +100,11 @@ app.post('/createAccount', async (req, res) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: 'Email Verification',
-      text: `Click the following link to verify your email: http://localhost:3000/${token}`,
+      text: `Click the following link to verify your email: http://localhost:3000/verify/${token}`,
     }
-  
-      // try {
-      //   const info = await transporter.sendMail(mailOptions);
-      //   console.log('Email sent:', info.response);
-      // } catch (error) {
-      //   console.error('Email sending failed:', error);
-      // }
 
-      // sending the verification email using their email and token
-      // await sendVerificationEmail(email, token); 
-      await transporter.sendMail(mailOptions); 
-
+    // sending the verification email using their email and token
+    await transporter.sendMail(mailOptions); // YOU STILL NEED TO SET isVerified TO TRUE AFTER THEY CLICK THE LINK
 
     // if(findUserByEmail(email) == null){ // no user exists in the db so we insert a user. 
     const result = await insertUser({
@@ -127,24 +120,6 @@ app.post('/createAccount', async (req, res) => {
     //   res.status(201).json({ message: 'Client already exists' });
     // }
 
-    //   const mailOptions = {
-    //     from: process.env.EMAIL_USER,
-    //     to: email,
-    //     subject: 'Email Verification',
-    //     text: `Click the following link to verify your email: http://localhost:3000/${token}`,
-    //   }
-    
-    // // try {
-    // //   const info = await transporter.sendMail(mailOptions);
-    // //   console.log('Email sent:', info.response);
-    // // } catch (error) {
-    // //   console.error('Email sending failed:', error);
-    // // }
-
-    // // sending the verification email using their email and token
-    // // await sendVerificationEmail(email, token); 
-    // await transporter.sendMail(mailOptions); 
-    // Use the insertUser function from the db module to insert a client document
   }catch (error) {
     //YOU SHOULD TALK TO A TA ABOUT THIS!
     // I cannot have both of these calls here. 
@@ -155,8 +130,33 @@ app.post('/createAccount', async (req, res) => {
 })
 
 
+// this route listens for when a user clicks on the email verifictaion link. 
+app.get('/verify/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+    // Find the user by the verification token
+    const user = await findUserByToken(token); 
 
+    // return res.status(200).json({ message: await updateUserByEmail(user.email, update)});
 
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const update = {
+      $set: {isVerified: true}
+    }
+    try {
+      await updateUser(user, update);
+      return res.status(200).json({ message: 'Email verification successful' });
+    } catch (updateError) {
+      console.error('Error updating user:', updateError);
+      return res.status(500).json({ message: 'Failed to update user status' });
+    }
+  } catch (error) {
+    console.error('Verification error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 
 
@@ -183,25 +183,25 @@ app.post('/createAccount', async (req, res) => {
 
 connectToMongoDB(); // connects us to the mongodb when the server starts. 
 
-
+ 
 
 // route to update a client's information. // look at this later 
-app.put('/update-client/:clientId', async (req, res) => {
-  try {
-    const clientId = req.params.clientId;
-    const { newAttribute } = req.body;
+// app.put('/update-client/:clientId', async (req, res) => {
+//   try {
+//     const clientId = req.params.clientId;
+//     const { newAttribute } = req.body;
 
-    // Use the updateUser function from the db module to update a client document
-    const result = await updateUser({ _id: clientId }, { $set: { "attributes.newAttribute": newAttribute } });
+//     // Use the updateUser function from the db module to update a client document
+//     const result = await updateUser({ _id: clientId }, { $set: { "attributes.newAttribute": newAttribute } });
 
-    console.log('Client updated:', result);
+//     console.log('Client updated:', result);
 
-    res.status(200).json({ message: 'Client updated successfully' });
-  } catch (error) {
-    console.error('Error updating client:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+//     res.status(200).json({ message: 'Client updated successfully' });
+//   } catch (error) {
+//     console.error('Error updating client:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
 
 
 
