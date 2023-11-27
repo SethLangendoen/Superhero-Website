@@ -53,7 +53,7 @@ async function updateUser(user, update) {
 
 async function findUserByEmail(email) {
   const usersCollection = client.db(dbName).collection('users');
-  return await usersCollection.findOne({ email });
+  return await usersCollection.findOne({ emailInput: email });
 }
 
 async function findUserByToken(token) {

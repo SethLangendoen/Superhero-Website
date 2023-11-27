@@ -30,7 +30,6 @@ const noti = document.getElementById('noti')
 
 
 
-
 createAccountButton.addEventListener('click', function(){
   const nicknameInput = document.getElementById('nickname').value;
   const emailInput = document.getElementById('email').value;
@@ -47,7 +46,7 @@ createAccountButton.addEventListener('click', function(){
 		noti.innerHTML = 'Please enter a password'; 
 	} else {
 
-		fetch('/createAccount', {
+		fetch('http://localhost:3000/createAccount', {
 			method: 'POST',
 			headers: {
 			'Content-Type': 'application/json',
@@ -56,12 +55,10 @@ createAccountButton.addEventListener('click', function(){
 		})
 		.then(response => response.json())
 		.then(data => {
-			if (data.key === 'notVerified'){
-			  noti.innerHTML = 'You must verify your account before logging in'; 
-			} else if (data.key === 'incorrectCredentials'){
-			  noti.innerHTML = 'Your email or password is incorrect'; 
+			if (data.key === 'userExists'){
+			  noti.innerHTML = 'A user with this email already exists'; 
 			} else if (data.key === 'success'){
-        alert('account successfully created'); 
+        alert('Account successfully created. Please navigate to your email to verify your account'); 
 				window.location.href = '/login.html';
 			}
 		  })

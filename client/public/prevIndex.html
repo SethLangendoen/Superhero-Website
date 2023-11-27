@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <title>Superhero Information</title>
   <link rel="stylesheet" type="text/css" href="main.css"> <!-- Link your CSS file here -->
-  <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script> -->
+
+  <!-- <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/babel-standalone@6/babel.js"></script> -->
 
 </head>
 
@@ -12,19 +15,33 @@
 
 <body>
 
+  <div id = 'root'></div>
+  <script type = 'module' src = './jsxFolders/main.jsx'></script>
 
-  <table>
+</body>
+
+</html>
+
+
+
+  <!-- <table>
       <tr>
         <td><a id = 'loginLink' href="Index.html">Superhero Hub</a></td>
-        <td id = 'login'><a id = 'loginLink' href = "login.html">login</a></td>
-        <!-- <td id = "loggedInAs"></td> When the user clicks on their nickname a dropdown will appear with change password and logout options.  -->
+
+
+        <td id = "loggedInAs"></td>
+        <td class="dropdown"> 
+          <p id = "settings">Settings</p>
+          <div class="dropdown-content">
+            <a href="#">Change Password</a>
+            <a href="/login.html">Logout</a>
+          </div>
+        </td>
       </tr>
-  </table>
+  </table> -->
 
-  
-
+<!-- 
   <div id = heroSearch>
-  <!-- for front-end 1 -->
   <label for="searchBy">Search By:</label>
   <select id="searchBy">
     <option value="name">name</option>
@@ -44,17 +61,11 @@
     <option value="name">name</option>
     <option value="Race">race</option>
     <option value="Publisher">publisher</option>
-    <!-- <option value="power">power</option> -->
   </select>
   <button id = 'sort'>Sort</button>
   </div>
 
   <div id = 'superheroSearched'></div>
-
-
-
-  
-  <!-- Content for lists -->
 
 
   <div>
@@ -86,20 +97,13 @@
       <option value="name">name</option>
       <option value="Race">race</option>
       <option value="Publisher">publisher</option>
-      <!-- <option value="power">power</option> -->
     </select>
     <button id = 'listSort'>Sort</button>
     </div>
 
-
     <div id = listDisplay></div>
 
-
-  </div>
-
+  </div> -->
 
 
-  <script src="main.js"></script>
-</body>
-
-</html>
+  <!-- <script src="main.js"></script> -->

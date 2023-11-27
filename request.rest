@@ -23,3 +23,8 @@ GET http://localhost:3000/getCredentials
 ###
 
 GET http://localhost:3000/verify/ef32bb5d27c3b18ce081aa5b69920a7bb697f401
+
+### 
+
+POST http://localhost:3000/logout
+

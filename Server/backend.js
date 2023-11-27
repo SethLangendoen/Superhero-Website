@@ -19,13 +19,13 @@ app.use(flash());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false})); 
 const router = express.Router();
+const cors = require('cors'); // allows cross oriting resource sharing 
+app.use(cors()); // Enable CORS for all routes
 
 
 
-// jwt tutorial---------------------------------
-
-const jwt = require('jsonwebtoken')
-app.use(express.json())
+const jwt = require('jsonwebtoken');
+app.use(express.json());
 
 
 // using the secret key from an environment file for extra security. 
@@ -52,16 +52,19 @@ const authenticateJWT = (req, res, next) => {
 
 
 
+
+var loggedInUser = {}; 
+
 // Route to generate a JWT upon successful login
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await findUserByEmail(email);
+  loggedInUser = user; 
   if(user){
     if (await bcrypt.compare(password, user.hashedPassword)) {
       if (user.isVerified === true){
-        const token = jwt.sign({ email: user.email }, jwtSecret, { expiresIn: '1h' });
-        res.json({ key: 'success', token }); 
-
+        const token = jwt.sign(user, jwtSecret, { expiresIn: '1h' });
+        res.json({ key: 'success', token, user}); 
       } else {
         res.json({key: 'notVerified'})
       }
@@ -69,23 +72,21 @@ app.post('/login', async (req, res) => {
       res.json({key: 'incorrectCredentials'})
     }
   }
- else { // email incorrect
+  else { // email incorrect
     res.json({key: 'incorrectCredentials'})
   }
 });
 
 
 
+app.get("/getCredentials", async(req, res) => {
+  res.json({key: loggedInUser}); 
+})
 
-// app.get('/getCredentials', authenticateJWT, async (req,res) => {
-//   const user = await findUserByEmail(emailUsed); 
-//   if (user){
-//     res(user); 
-//   } else {
-//     res.status(401).json({ message: 'No user found'});
-//   }
-// })
-
+app.post('/logout', (req, res) => {
+  loggedInUser = {};
+  res.json({ key: 'success', message: 'Logged out successfully' });
+});
 
 
 
@@ -96,41 +97,61 @@ const generateRandomToken = function(){
 };
 
 app.post('/createAccount', async (req, res) => {
-  try{
-    const { nicknameInput , emailInput, passwordInput} = req.body;
 
-    const hashedPassword = await bcrypt.hash(passwordInput, 10) // 10 describes the security intensity. 10 is quick as well.  
-    disabled = false; // the admin can disable accounts using this. 
-    isVerified = false; // will be used to determine if the user's email has been verified. 
+  const { nicknameInput , emailInput, passwordInput} = req.body;
+  const user = await findUserByEmail(emailInput);
+  if(user){
+    res.json({key: 'userExists'})
+  } else {
+    const hashedPassword = await bcrypt.hash(passwordInput, 10) // 10 describes the security intensity. 10 is quick as well. 
+    disabled = false; // the admin can disable accounts using this.
+    isVerified = false; // will be used to determine if the user's email has been verified.
     token = generateRandomToken();
+      // if(findUserByEmail(email) == null){ // no user exists in the db so we insert a user.
+    try{
+      const result = await insertUser({
+        nicknameInput,
+        emailInput,
+        hashedPassword,
+        disabled,
+        isVerified,
+        token
+      });
+    }catch(e){
 
-    // if(findUserByEmail(email) == null){ // no user exists in the db so we insert a user. 
-    const result = await insertUser({
-      nicknameInput,
-      emailInput,
-      hashedPassword,
-      disabled,
-      isVerified, 
-      token
-    });
+    }
 
-
+    try{
+    // setting up the mailing options. 
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: emailInput,
       subject: 'Email Verification',
       text: `Click the following link to verify your email: http://localhost:3000/verify/${token}`,
     }
-
-    // sending the verification email using their email and token
     await transporter.sendMail(mailOptions);
 
-  }catch (error) {
+    }catch(e){
 
-    res.json({ key: 'success'}); 
+    }
 
+    res.json({key: 'success'});
   }
+
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

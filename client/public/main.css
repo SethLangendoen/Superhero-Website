@@ -7,19 +7,56 @@ body {
   padding: 0;
 
 }
+/* This has to do with the dropdown under the logged in as part: */ 
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Hidden by default, will be visible on hover */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* Style for dropdown options */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  display: block;
+  text-decoration: none;
+  text-align: center; 
+  font-size: 12px;
+}
+
+/* Change color on hover */
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+/* Show the dropdown content when hovering over the dropdown container */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
 
 /* This is everything to do with the log in pages ----------------------------------------------------- */
 
+
 #loginOptions {
-  background-color: #3498db; 
+  background-color: rgba(52, 152, 219, 0.95); /* RGB values and opacity */
   color: rgb(255, 255, 255); 
   padding: 10px; 
   border-radius: 10px; 
   text-align: center; 
-  width: 40%;
+  width: 50%;
   margin: 0 auto;
-  margin-top: 200px; 
-
+  margin-top: 50px; 
 }
 
 #loginOptions button {             
@@ -33,9 +70,10 @@ body {
 tr {
   font-size: 30px; 
   color: white;
-  padding: 20px;
+  /* padding: 20px; */
   text-align: left;
   margin-top: 0px; 
+  margin-right: 0px; 
 }
 
 table {
@@ -45,7 +83,7 @@ table {
   margin-bottom: 100px; 
 }
 td {
-  padding-left: 50px; 
+  padding-left: 10px; 
 }
 
 #login {
@@ -53,6 +91,11 @@ td {
   padding-right: 50px;
   color: #3498db; /* Change color as needed */
   font-weight: bold;
+}
+
+#loggedInAs {
+  text-align: right; 
+  padding-right: 10px; 
 }
 
 .credentials {

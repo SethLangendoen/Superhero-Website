@@ -15,7 +15,7 @@ goButton.addEventListener('click', function(){
 	else if (password == ''){
 		notification.innerHTML = 'Please enter a password'; 
 	} else {
-		fetch('/login', {
+		fetch('http://localhost:3000/login', {
 			method: 'POST',
 			headers: {
 			'Content-Type': 'application/json',
@@ -28,28 +28,15 @@ goButton.addEventListener('click', function(){
 			  notification.innerHTML = 'You must verify your account before logging in'; 
 			} else if (data.key === 'incorrectCredentials'){
 			  notification.innerHTML = 'Your email or password is incorrect'; 
+			} else if (data.key === 'incorrectCredentials'){
+			  notification.innerHTML = 'Your email or password is incorrect'; 
 			} else if (data.key === 'success'){
-				window.location.href = '/Index.html';
+				window.location.href = '/index.html';
+
 			}
 		  })
 	}
 })
 
 
-
-// fetch('/login', {
-// 	method: 'POST',
-// 	headers: {
-// 	'Content-Type': 'application/json',
-// 	},
-// 	body: JSON.stringify({ email, password }),
-// })
-// .then(response => response.json())
-// .then((key) => {
-// if (key === 'notVerified'){
-// 	notification.innerHTML = 'You must verify your account before logging in'; 
-// } else if (key === 'incorrectCredentials'){
-// 	notification.innerHTML = 'Your email or password is incorrect'; 
-// }
-// })
 
