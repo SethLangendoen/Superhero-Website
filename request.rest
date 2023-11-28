@@ -28,3 +28,15 @@ GET http://localhost:3000/verify/ef32bb5d27c3b18ce081aa5b69920a7bb697f401
 
 POST http://localhost:3000/logout
 
+###
+
+POST http://localhost:3000/heroSearch
+Content-Type: application/json
+
+{
+  "name": "as",
+  "race": "",
+  "publisher": "",
+  "power": ""
+
+}

@@ -21,7 +21,10 @@ app.use(express.urlencoded({ extended: false}));
 const router = express.Router();
 const cors = require('cors'); // allows cross oriting resource sharing 
 app.use(cors()); // Enable CORS for all routes
+var stringSimilarity = require("string-similarity");
 
+
+connectToMongoDB(); // connects us to the mongodb when the server starts. 
 
 
 const jwt = require('jsonwebtoken');
@@ -43,6 +46,7 @@ const authenticateJWT = (req, res, next) => {
   }
   jwt.verify(token, jwtSecret, (err, user) => {
     if (err) {
+      console.log(token)
       return res.status(403).json({ message: 'Forbidden' });
     }
     req.user = user;
@@ -59,11 +63,12 @@ var loggedInUser = {};
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await findUserByEmail(email);
-  loggedInUser = user; 
   if(user){
+    loggedInUser = user; 
     if (await bcrypt.compare(password, user.hashedPassword)) {
       if (user.isVerified === true){
         const token = jwt.sign(user, jwtSecret, { expiresIn: '1h' });
+        loggedInUser.token = token; // associating the signed token with the logged in user. 
         res.json({ key: 'success', token, user}); 
       } else {
         res.json({key: 'notVerified'})
@@ -78,7 +83,6 @@ app.post('/login', async (req, res) => {
 });
 
 
-
 app.get("/getCredentials", async(req, res) => {
   res.json({key: loggedInUser}); 
 })
@@ -86,6 +90,24 @@ app.get("/getCredentials", async(req, res) => {
 app.post('/logout', (req, res) => {
   loggedInUser = {};
   res.json({ key: 'success', message: 'Logged out successfully' });
+});
+
+
+
+// route to change a user's password.
+app.post('/changePassword', authenticateJWT, async (req, res) => {
+  const { password } = req.body;
+  const user = findUserByEmail(loggedInUser.email);
+  // Ensure user exists before attempting to update
+  if (!user) {
+    return res.status(404).json({ key: 'error', message: 'User not found' });
+  }
+  const hashedPass = await bcrypt.hash(password, 10);
+  const update = {
+    $set: { hashedPassword: hashedPass },
+  };
+  await updateUser(user, update);
+  res.json({ key: 'success', message: 'Password changed successfully' });
 });
 
 
@@ -193,6 +215,65 @@ app.get('/verify/:token', async (req, res) => {
 
 
 
+// read the powers json file
+const superheroPowerData = JSON.parse(
+  fs.readFileSync('superhero_powers.json', 'utf8') // reads the powers jsonfile and parses it into a js object. 
+); 
+
+// Read the superhero_info.json file
+const superheroInfoData = JSON.parse(
+  fs.readFileSync('superhero_info.json', 'utf8') // reads the contents of the file and then parses it into a js object
+);
+
+
+// route for searching heroes, and including the heroes that only match all filters given in name, race publisher and power
+app.post('/heroSearch', (req, res) => {
+const {name, race, publisher, power} = req.body; 
+
+  
+
+  const foundHeroesByName = superheroInfoData.filter((hero) => hero.name.toLowerCase().includes(name.toLowerCase())); 
+  const foundHeroesByRace = superheroInfoData.filter((hero) => hero.Race.toLowerCase().includes(race.toLowerCase())); 
+  const foundHeroesByPublisher = superheroInfoData.filter((hero) => hero.Publisher.toLowerCase().includes(publisher.toLowerCase())); 
+  const powers = superheroPowerData.filter((powers) => (powers[power] === "True")); 
+
+  const heroNamesByPower = new Set();
+  for (const powerItem of powers) {
+    const heroesWithPower = superheroInfoData.filter((hero) => hero.name === powerItem.hero_names);
+    heroesWithPower.forEach((hero) => heroNamesByPower.add(hero));
+  }
+
+  const foundHeroesByPower = Array.from(heroNamesByPower);
+
+  const nonNullLists = [foundHeroesByName, foundHeroesByRace, foundHeroesByPublisher, foundHeroesByPower];
+  const filteredLists = nonNullLists.filter((list) => list && list.length > 0);
+  if (filteredLists.length === 0) {
+    res.json([]);
+    return;
+  }
+
+  const resultHeroes = filteredLists[0].filter((hero) => {
+    return filteredLists.every((list) => list.includes(hero));
+  });
+
+  res.json(resultHeroes)
+
+})
+
+
+
+// Define a route to get superhero information by ID
+app.get('/api/open/get_superhero_info/:id', (req, res) => { // defines an http get routej. req is the request object, res is the response object
+  const superheroId = req.params.id; // extracts the id parameter from the url and assigns it to superheroId
+  // Find the superhero by ID
+  const superhero = superheroInfoData.find( // searches heroes until it finds an id that s
+    (hero) => hero.id === parseInt(superheroId)
+  );
+  if (!superhero) {
+    return res.status(404).json({ error: 'Superhero not found' });
+  }
+  res.send(JSON.stringify(superhero));
+});
 
 
 
@@ -201,35 +282,6 @@ app.get('/verify/:token', async (req, res) => {
 
 
 
-
-
-
-
-
-// Everything to do with mongodb user management --------------------------------------------------------------------------------
-
-
-connectToMongoDB(); // connects us to the mongodb when the server starts. 
-
- 
-
-// route to update a client's information. // look at this later 
-// app.put('/update-client/:clientId', async (req, res) => {
-//   try {
-//     const clientId = req.params.clientId;
-//     const { newAttribute } = req.body;
-
-//     // Use the updateUser function from the db module to update a client document
-//     const result = await updateUser({ _id: clientId }, { $set: { "attributes.newAttribute": newAttribute } });
-
-//     console.log('Client updated:', result);
-
-//     res.status(200).json({ message: 'Client updated successfully' });
-//   } catch (error) {
-//     console.error('Error updating client:', error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
 
 
 
@@ -247,7 +299,7 @@ process.on('SIGINT', async () => {
 });
 
 
-// The end of mongodb --------------------------------------------------------------------------------------------
+// previous application --------------------------------------------------------------------------------------------
 
 
 // used for multiple language compatibility
@@ -274,23 +326,7 @@ app.get('/', (req, res) => {
 
 
 
-// Read the superhero_info.json file
-const superheroInfoData = JSON.parse(
-  fs.readFileSync('superhero_info.json', 'utf8') // reads the contents of the file and then parses it into a js object
-);
 
-// Define a route to get superhero information by ID
-app.get('/api/open/get_superhero_info/:id', (req, res) => { // defines an http get routej. req is the request object, res is the response object
-  const superheroId = req.params.id; // extracts the id parameter from the url and assigns it to superheroId
-  // Find the superhero by ID
-  const superhero = superheroInfoData.find( // searches heroes until it finds an id that s
-    (hero) => hero.id === parseInt(superheroId)
-  );
-  if (!superhero) {
-    return res.status(404).json({ error: 'Superhero not found' });
-  }
-  res.send(JSON.stringify(superhero));
-});
 
 // Define a route to get superhero information by names
 app.get('/api/open/get_superhero_i/:name', (req, res) => { // defines an http get route. req is the request object, res is the response object
@@ -346,10 +382,6 @@ app.get('/api/open/search_superhero_ids/:field/:pattern/:n', (req, res) => {
 });
 
 
-// read the powers json file
-const superheroPowerData = JSON.parse(
-  fs.readFileSync('superhero_powers.json', 'utf8') // reads the powers jsonfile and parses it into a js object. 
-); 
 
 
 

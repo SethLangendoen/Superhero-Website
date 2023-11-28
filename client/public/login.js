@@ -1,6 +1,6 @@
 const notification = document.getElementById("notification"); 
-const goButton = document.getElementById("goButton")
-
+const goButton = document.getElementById("goButton"); 
+const guest = document.getElementById('guest'); 
 
 goButton.addEventListener('click', function(){
 	const email = document.getElementById('userEmail').value;
@@ -36,6 +36,24 @@ goButton.addEventListener('click', function(){
 			}
 		  })
 	}
+})
+
+
+
+guest.addEventListener('click', function(){
+	// so that the logged in user variable is reset and a user can't change the password of the last person who logged in. 
+	fetch('http://localhost:3000/logout', {
+		method: 'POST',
+		headers: {
+		'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ email, password }),
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log("logged out"); 
+		alert('logged out'); 
+	})
 })
 
 

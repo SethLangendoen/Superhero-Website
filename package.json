@@ -32,7 +32,9 @@
     "nodemailer": "^6.9.7",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "save": "^2.9.0"
+    "react-router-dom": "^6.20.0",
+    "save": "^2.9.0",
+    "string-similarity": "^4.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",
