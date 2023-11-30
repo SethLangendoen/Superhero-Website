@@ -56,6 +56,11 @@ async function findUserByEmail(email) {
   return await usersCollection.findOne({ emailInput: email });
 }
 
+async function findUserByNickname(nickname) {
+  const usersCollection = client.db(dbName).collection('users');
+  return await usersCollection.findOne({ nicknameInput: nickname });
+}
+
 async function findUserByToken(token) {
   const usersCollection = client.db(dbName).collection('users');
   return await usersCollection.findOne({ token });
@@ -76,5 +81,6 @@ module.exports = {
 	insertUser,
 	updateUser,
   findUserByEmail, 
+  findUserByNickname,
   findUserByToken
 };

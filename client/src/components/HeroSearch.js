@@ -11,7 +11,6 @@ function HeroSearch(){
 
 	
 	const searchHeroes = () => {
-
 		fetch('http://localhost:3000/heroSearch', {
 			method: 'POST',
 			headers: {
@@ -32,8 +31,8 @@ function HeroSearch(){
 		setSelectedHero(hero);
 	  };
 
-	const searchOnDDG = (heroName) => {
-		const ddgSearchURL = `https://duckduckgo.com/?q=${encodeURIComponent(heroName)}&ia=web`;
+	const searchOnDDG = (heroName, heroPublisher) => {
+		const ddgSearchURL = `https://duckduckgo.com/?q=${encodeURIComponent(heroName + ' ' + heroPublisher)}&ia=web`;
 		window.open(ddgSearchURL, '_blank');
 	};
 	  
@@ -50,15 +49,15 @@ function HeroSearch(){
 			<ul>
 				{superheroes.map((hero) => (
 				<li key={hero.id} onClick={() => showHeroDetails(hero)}>
-					<strong>{hero.name} - {hero.Publisher} <button onClick={() => searchOnDDG(hero.name)}>Search on DDG</button></strong>
+					<strong>{hero.name} - {hero.Publisher} <button onClick={() => searchOnDDG(hero.name, hero.Publisher)}>Search on DDG</button></strong>
 					{selectedHero === hero && (
 					<ul>
 						<li>Gender: {hero.Gender}</li>
 						<li>Eye Color: {hero['Eye color']}</li>
 						<li>Race: {hero.Race}</li>
-						<li>Hair Color: {hero['Hair Color']}</li>
+						<li>Hair Color: {hero['Hair color']}</li>
 						<li>Height: {hero.Height}</li>
-						<li>Skin Color: {hero['Skin Color']}</li>
+						<li>Skin Color: {hero['Skin olor']}</li>
 						<li>Alignment: {hero.Alignment}</li>
 						<li>Weight: {hero.Weight}</li>
 					</ul>

@@ -40,3 +40,29 @@ Content-Type: application/json
   "power": ""
 
 }
+
+###
+
+POST http://localhost:3000/displayLists
+
+###
+
+POST http://localhost:3000/getHeroesByList
+Content-Type: application/json
+
+{
+"heroList": "batman,superman,spider-man"
+}
+
+
+### 
+// for the notificaiton debugging, but I couldn't get it to work. 
+POST http://localhost:3000/createList
+Content-Type: application/json
+
+{
+  "listName": "sdf",
+  "listDesc": "description",
+  "heroCollection": "superman",
+  "createdBy": "Seth",
+}

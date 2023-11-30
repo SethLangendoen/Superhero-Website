@@ -1,7 +1,7 @@
 // Header.js
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import ChangePassword from './ChangePassword';
+// import ChangePassword from './ChangePassword';
 
 function Header() {
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -38,7 +38,7 @@ function Header() {
   return (
 	
     <div className="header">
-      <h1><Link to = '/'>Superhero Hub</Link></h1>
+      <h1><Link to = '/index.html'>Superhero Hub</Link></h1>
       <div className="user-info">
         <p>Logged in as: {loggedInUser || 'Guest'}</p>
       </div>

@@ -10,7 +10,8 @@ const bcrypt = require('bcrypt');
 const flash = require('express-flash'); 
 const session = require('express-session'); 
 const bodyParser = require('body-parser');
-const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser, findUserByEmail, findUserByToken } = require('./db');
+const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser, findUserByEmail, findUserByNickname, findUserByToken } = require('./db');
+const { insertList, getAllLists } = require('./listDB'); 
 require('dotenv').config();
 const crypto = require('crypto');
 const transporter = require('./emailConfig'); // to be used for email configuration. 
@@ -28,6 +29,7 @@ connectToMongoDB(); // connects us to the mongodb when the server starts.
 
 
 const jwt = require('jsonwebtoken');
+const { parentPort } = require('worker_threads');
 app.use(express.json());
 
 
@@ -122,7 +124,10 @@ app.post('/createAccount', async (req, res) => {
 
   const { nicknameInput , emailInput, passwordInput} = req.body;
   const user = await findUserByEmail(emailInput);
-  if(user){
+  const nick = await findUserByNickname(nicknameInput); 
+  if(nick){
+    res.json({key: "nickExists"}); 
+  } else if(user){
     res.json({key: 'userExists'})
   } else {
     const hashedPassword = await bcrypt.hash(passwordInput, 10) // 10 describes the security intensity. 10 is quick as well. 
@@ -163,8 +168,56 @@ app.post('/createAccount', async (req, res) => {
 })
 
 
+// this will need middleware. 
+// lists will contain a name, description, hero collection, visibility flag of public or private (defualt private), lastModified
 
 
+
+app.post('/createList', async (req, res) => {
+  const {listName, listDesc, heroCollection, createdBy} = req.body; 
+  var currentDateAndTime = new Date();
+  visibility = 'private'; 
+
+  const allListsArray = Array.from(await getAllLists()); // converting to an array to be iterated over. 
+  const sameName = allListsArray.find((list) => ((list.listName === listName) && (list.createdBy === createdBy)))
+
+  if(sameName){ // sameName tells us that it found a list with a matching list name. 
+    res.json({key: 'sameName'}); 
+  } else { // no lists were found with this name. We can procees to making it. 
+
+    try{
+      const result = await insertList({
+        listName,
+        listDesc,
+        createdBy,
+        heroCollection,
+        visibility,
+        currentDateAndTime, 
+
+      });
+    }catch(e){
+
+    }
+    res.json({key: 'success'});
+  }
+
+})
+
+
+
+
+
+
+// used to get all the lists.
+app.post('/displayLists', async (req, res) => {
+  try {
+    const lists = await getAllLists();
+    res.json({ data: lists });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch lists' });
+  }
+});
 
 
 
@@ -226,11 +279,10 @@ const superheroInfoData = JSON.parse(
 );
 
 
+
 // route for searching heroes, and including the heroes that only match all filters given in name, race publisher and power
 app.post('/heroSearch', (req, res) => {
 const {name, race, publisher, power} = req.body; 
-
-  
 
   const foundHeroesByName = superheroInfoData.filter((hero) => hero.name.toLowerCase().includes(name.toLowerCase())); 
   const foundHeroesByRace = superheroInfoData.filter((hero) => hero.Race.toLowerCase().includes(race.toLowerCase())); 
@@ -260,6 +312,25 @@ const {name, race, publisher, power} = req.body;
 
 })
 
+
+// this function needs to take a list of names and return a list of the corresponding heroes. 
+
+app.post('/getHeroesByList', (req, res) => {
+  const { heroList } = req.body;
+  const splitHeroList = heroList.split(',');
+  const finalHeroList = [];
+
+  splitHeroList.forEach((heroName) => {
+    const foundHero = superheroInfoData.find((jsonHero) =>
+      jsonHero.name.toLowerCase() === heroName.trim().toLowerCase()
+    );
+
+    if (foundHero) {
+      finalHeroList.push(foundHero);
+    }
+  });
+  res.json({ key: finalHeroList });
+});
 
 
 // Define a route to get superhero information by ID

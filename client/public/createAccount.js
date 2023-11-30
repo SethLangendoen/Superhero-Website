@@ -54,9 +54,11 @@ createAccountButton.addEventListener('click', function(){
 			body: JSON.stringify({ nicknameInput , emailInput, passwordInput}),
 		})
 		.then(response => response.json())
-		.then(data => {
-			if (data.key === 'userExists'){
-			  noti.innerHTML = 'A user with this email already exists'; 
+			.then(data => {
+			if(data.key === "nickExists"){
+				noti.innerHTML = "A user with this nickname already exists"; 
+			} else if (data.key === 'userExists'){
+				noti.innerHTML = 'A user with this email already exists'; 
 			} else if (data.key === 'success'){
         alert('Account successfully created. Please navigate to your email to verify your account'); 
 				window.location.href = '/login.html';
