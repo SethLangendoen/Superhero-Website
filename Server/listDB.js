@@ -24,6 +24,46 @@ async function insertList(list) {
 
 
 
+async function editList(newListName, newListDesc, newHeroCollection, newPublicity, createdBy, prevListName) {
+    const listsCollection = client.db(dbName).collection('lists');
+
+    if (newPublicity === true){
+        var visibility = "public"; 
+    } else {
+        visibility = "private"; 
+    }
+  
+    // Assuming you have a unique identifier like _id for your documents
+    const foundList = await listsCollection.findOne({ listName: prevListName, createdBy: createdBy });
+  
+    // Define the updates based on provided parameters
+    const updates = {
+      $set: {
+        listName: newListName,
+        listDesc: newListDesc,
+        heroCollection: newHeroCollection,
+        visibility: visibility,
+      },
+    };
+  
+    try {
+      // Update the document based on the unique identifier (_id)
+      const result = await listsCollection.updateOne({ _id: foundList._id }, updates);
+  
+      if (result.modifiedCount === 1) {
+        console.log("List updated successfully");
+      } else {
+        console.log("Failed to update the list");
+      }
+    } catch (error) {
+      console.error("Error updating list:", error);
+    }
+  }
+  
+
+
+
+
 async function getAllLists() {
     const listsCollection = client.db(dbName).collection('lists');
     try {
@@ -39,5 +79,6 @@ async function getAllLists() {
 
 module.exports = {
 	insertList, 
-	getAllLists
+	getAllLists, 
+    editList
 };

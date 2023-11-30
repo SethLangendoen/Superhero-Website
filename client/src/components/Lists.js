@@ -161,19 +161,8 @@ function Lists() {
   };
 
 
-  // Editing lists that you have created: 
-  /* 
-  ### Get the current list that is clicked on when the edit button is pressed. (using the currently logged in user's nickname and the listname. )
-  Edit Dislay: 
-  - name input, description input, hero input, publicity input, save button. 
-  - Upon saving, the previous list is updated appropriately. (inputs must all be there)
-
-  */ 
 
 
-
-
-  
   // prevListName used for finding a previous list
   const editExistingList = (prevListName) => {
 
@@ -198,7 +187,8 @@ function Lists() {
       })
         .then((response) => response.json())
         .then((data) => {
-          setPersonalLists(data.data); // resetting the personal lists afterwards. 
+          // setPersonalLists(data.data); // resetting the personal lists afterwards. 
+          setLoggedInUserLists(); 
         })
         .catch((error) => console.error('Error fetching lists:', error));
     })
@@ -218,101 +208,105 @@ function Lists() {
     <div>
 
 		
-      <div id="createLists">
-        <p>Create a Hero List</p>
-        <label htmlFor="name">Name</label>
-        <input
-          id="name"
-          value={listName}
-          onChange={(e) => setListName(e.target.value)}
-        ></input>
-        <label htmlFor="description">Description</label>
-        <input
-          id="description"
-          value={listDesc}
-          onChange={(e) => setListDesc(e.target.value)}
-        ></input>
-        <label htmlFor="addHeroes">Add Heroes</label>
-        <input
-          id="addHeroes"
-          placeholder="Separate hero names by commas"
-          value={heroCollection}
-          onChange={(e) => setHeroCollection(e.target.value)}
-        ></input>
-        
-        {/* this needs to be a part of the editing functionality. 
-        <label htmlFor = "privateCheckBox">Public</label>
-        <input type = "checkbox" ></input> */}
+    <div id = "createLists">
+        <div id = 'innerDiv'>
+          <p class = "subtitle">Create a Hero List</p>
+          {/* <label htmlFor="name">Name</label> */}
+          <input
+            id="name"
+            placeholder='Name'
+            value={listName}
+            onChange={(e) => setListName(e.target.value)}
+          ></input>
+          {/* <label htmlFor="description">Description</label> */}
+          <input
+            id="description"
+            placeholder='Description'
+            value={listDesc}
+            onChange={(e) => setListDesc(e.target.value)}
+          ></input>
+          {/* <label htmlFor="addHeroes">Add Heroes</label> */}
+          <input
+            id="addHeroes"
+            placeholder="Separate hero names by commas"
+            value={heroCollection}
+            onChange={(e) => setHeroCollection(e.target.value)}
+          ></input>
+          
+          {/* this needs to be a part of the editing functionality. 
+          <label htmlFor = "privateCheckBox">Public</label>
+          <input type = "checkbox" ></input> */}
 
-        <button onClick={createList}>Create List</button>
+          <button class = 'createListButton' onClick={createList}>Create List</button>
+        </div>
+
+        <p>{notification}</p>
+
+
+
+        <p class = "subtitle"> Lists You've Made</p>
+        <div id="displayLists">
+          <ul>
+            {personalLists.map((list) => (
+              <li key={list._id} onClick={() => showListDetails(list)}>
+                <strong>{list.listName} - Created By: {list.createdBy || 'Guest'}</strong>
+                {selectedList === list && (
+                  <ul>
+                    <button class = 'createListButton' onClick ={() => selectedHeroEdit()}>Edit This List</button>
+                    {editDisplay &&  (
+                      <div id = "editDisplay">
+                        {/* <label htmlFor = "nameInput">Name</label> */}
+                        <input placeholder = "Name" id = "nameInput" onChange={(e) => setListNameEdit(e.target.value)}></input>
+                        {/* <label htmlFor = "descriptionInput">Description</label> */}
+                        <input placeholder = "Description" id = "descriptionInput" onChange={(e) => setListDescEdit(e.target.value)}></input>
+                        {/* <label htmlFor = "heroInput">Heroes</label> */}
+                        <input id = "heroInput" placeholder='separate hero names by commas' onChange={(e) => setHeroCollectionEdit(e.target.value)}></input>
+                        <label htmlFor = "publicInput">Public</label>
+                        <input id = "publicInput" type = "checkbox" onChange={(e) => setPublicity(e.target.checked)}></input>
+                        <button onClick = {() => editExistingList(list.listName)}>Save</button>
+                      </div>
+                    )}
+
+
+
+                    <li>{list.listDesc}</li>
+
+
+                    {/* <li>Heroes: {list.heroCollection}</li> */}
+
+                    {thisHeroList && thisHeroList.map((hero) => (
+
+                      <li key={hero.id} onClick={ () => showHeroDetails(hero)}>
+                        <strong>{hero.name} - {hero.Publisher} <button class = 'ddgSearch' onClick={() => searchOnDDG(hero.name, hero.Publisher)}>Search on DDG</button></strong>
+                        
+                        
+                        
+                        
+                        {selectedHero === hero && (
+                        <ul>
+                          <li>Gender: {hero.Gender}</li>
+                          <li>Eye Color: {hero['Eye color']}</li>
+                          <li>Race: {hero.Race}</li>
+                          <li>Hair Color: {hero['Hair color']}</li>
+                          <li>Height: {hero.Height}</li>
+                          <li>Skin Color: {hero['Skin olor']}</li>
+                          <li>Alignment: {hero.Alignment}</li>
+                          <li>Weight: {hero.Weight}</li>
+                        </ul>
+                        )}
+                      </li>
+
+                    ))}
+
+
+
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-
-      <p>{notification}</p>
-
-
-      <p>Personal Lists</p>
-      <div id="displayLists">
-        <ul>
-          {personalLists.map((list) => (
-            <li key={list._id} onClick={() => showListDetails(list)}>
-              <strong>{list.listName} - Created By: {list.createdBy || 'Guest'}</strong>
-              {selectedList === list && (
-                <ul>
-                  <button onClick ={() => selectedHeroEdit()}>Edit This List</button>
-                  {editDisplay &&  (
-                    <div id = "editDisplay">
-                      <label htmlFor = "nameInput">Name</label>
-                      <input id = "nameInput" onChange={(e) => setListNameEdit(e.target.value)}></input>
-                      <label htmlFor = "descriptionInput">Description</label>
-                      <input id = "descriptionInput" onChange={(e) => setListDescEdit(e.target.value)}></input>
-                      <label htmlFor = "heroInput">Heroes</label>
-                      <input id = "heroInput" placeholder='separate hero names by commas' onChange={(e) => setHeroCollectionEdit(e.target.value)}></input>
-                      <label htmlFor = "publicInput">Public</label>
-                      <input id = "publicInput" type = "checkbox" onChange={(e) => setPublicity(e.target.checked)}></input>
-                      <button onClick = {() => editExistingList(list.listName)}>Save</button>
-                    </div>
-                  )}
-
-
-
-                  <li>Description: {list.listDesc}</li>
-
-
-                  {/* <li>Heroes: {list.heroCollection}</li> */}
-
-                  {thisHeroList && thisHeroList.map((hero) => (
-
-                    <li key={hero.id} onClick={ () => showHeroDetails(hero)}>
-                      <strong>{hero.name} - {hero.Publisher} <button onClick={() => searchOnDDG(hero.name, hero.Publisher)}>Search on DDG</button></strong>
-                      
-                      
-                      
-                      
-                      {selectedHero === hero && (
-                      <ul>
-                        <li>Gender: {hero.Gender}</li>
-                        <li>Eye Color: {hero['Eye color']}</li>
-                        <li>Race: {hero.Race}</li>
-                        <li>Hair Color: {hero['Hair color']}</li>
-                        <li>Height: {hero.Height}</li>
-                        <li>Skin Color: {hero['Skin olor']}</li>
-                        <li>Alignment: {hero.Alignment}</li>
-                        <li>Weight: {hero.Weight}</li>
-                      </ul>
-                      )}
-                    </li>
-
-                  ))}
-
-
-
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-
 
 
       <p>Publc Lists</p>

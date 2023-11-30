@@ -1,16 +1,62 @@
-/* src/components/App.css */
+/* for a starry background: */ 
+
+body {
+  background-color: #cee3f8; /* Dark blue background */
+  font-family: 'Comic Sans MS', cursive;
+  color: black; 
+  margin: 0;
+  padding: 0;
+}
+
+/* HomePage.css or the same CSS file where you want to keep these styles */
+
+.home-page-container {
+  display: flex;
+  justify-content: space-between; /* Distribute space between components */
+}
+
+.hero-search-container, 
+.lists-container {
+  padding: 10px; /* Adjust as needed */
+}
+
+.hero-search-container{
+  width: 30%; /* Adjust the width for each container */
+}
+
+.lists-container{
+  width: 70%; /* Adjust the width for each container */
+
+}
+
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #3498db; /* Set your desired background color */
-  color: white; /* Set your desired text color */
+  background-color: #3498db; 
+  color: white; 
   padding: 10px;
+  text-decoration: none;
+
 }
 
+.header h1 {
+  font-size: 2em;
+  margin: 0;
+  letter-spacing: 2px;
+  color: #fff; /* White text color */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow for a cool effect */
+  font-family: 'Comic Sans MS', cursive; /* Superhero font */
+}
+
+.header h1 span {
+  color: #3ade66; /* Superhero Pink, change to your preferred color */
+}
+
+
 .user-info {
-  margin-right: 20px; /* Add some spacing to the right of user info */
+  margin-right: 20px;
 }
 
 .settings-dropdown {
@@ -23,31 +69,31 @@
   position: absolute;
   top: 100%;
   right: 0;
-  background-color: #f9f9f9; /* Set your desired dropdown background color */
+  background-color: #f9f9f9; 
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
 }
 
 .settings-dropdown:hover .dropdown-content {
-  display: block; /* Show dropdown on hover */
+  display: block; 
 }
 
 /* Style the dropdown links */
 .dropdown-content a {
-  color: black; /* Set your desired link color */
+  color: black; 
   padding: 12px 16px;
   text-decoration: none;
   display: block;
 }
 
 .dropdown-content a:hover {
-  background-color: #ddd; /* Set your desired link hover color */
+  background-color: #ddd; 
 }
 
 /* Style the logout button */
 .dropdown-content button {
   color: white;
-  background-color: #d9534f; /* Set your desired button color */
+  background-color: #d9534f; 
   border: none;
   padding: 12px 16px;
   text-decoration: none;
@@ -57,5 +103,307 @@
 }
 
 .dropdown-content button:hover {
-  background-color: #c9302c; /* Set your desired button hover color */
+  background-color: #c9302c; 
+}
+
+
+/* This contains hero search items -------------------------------------- */ 
+
+#heroSearchDiv {
+
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+  justify-content: center; /* Center items vertically */
+  background-color: rgb(14, 84, 138);
+  width: 90%;
+  margin: 10px;
+  padding: 20px 10px;
+  border-radius: 20px;
+}
+
+
+#heroSearchDiv li{
+
+  list-style-type: none;
+  background-color: rgb(108, 132, 151);
+  margin: 10px; 
+  padding: 10px; 
+  border-radius: 5px; 
+  text-align: center;
+  font-size: 18px; 
+  color: black; 
+  
+}
+
+#heroSearchDiv ul{
+
+  list-style-type: none;
+  /* background-color: rgb(199, 224, 224); */
+  margin: 10px; 
+  padding: 10px; 
+  border-radius: 5px; 
+  text-align: center;
+  font-size: 18px; 
+  color: black; 
+  width: 100%; 
+  
+}
+
+#heroSearchDiv input {
+  border: 2px solid #f5f5f5;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #282c34;
+  color: #61dafb;
+  outline: none;
+  transition: border-color 0.3s ease;
+  display: block; /* or display: flex; flex-direction: column; */
+  margin-bottom: 10px; /* Optional: Add some spacing between stacked inputs */
+  width: 90%; 
+}
+
+#heroSearchDiv input:hover,
+#heroSearchDiv input:focus {
+  border-color: #61dafb;
+}
+
+/* Optional: Add a subtle box shadow for a raised effect */
+#heroSearchDiv input:focus {
+  box-shadow: 0 0 10px rgba(97, 218, 251, 0.5);
+}
+
+#Search {
+  width: 95%; 
+  display: inline-block;
+  padding: 10px 16px; /* Increased padding for a larger button */
+  font-size: 18px; /* Increased font size for better visibility */
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid #f5f5f5; /* Border color */
+  border-radius: 8px; /* Rounded corners */
+  background-color: #282c34; /* Background color */
+  color: #61dafb; /* Text color */
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* Smooth transition */
+}
+
+#Search:hover {
+  background-color: #61dafb; /* Background color on hover */
+  color: #282c34; /* Text color on hover */
+  border-color: #61dafb; /* Border color on hover */
+}
+
+/* Optional: Add a subtle box shadow for a raised effect */
+#Search:focus {
+  box-shadow: 0 0 10px rgba(97, 218, 251, 0.5);
+  outline: none;
+}
+
+.ddgSearch {
+  display: inline-block;
+  padding: 4px 6px;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid #333; /* Border color */
+  border-radius: 8px; /* Rounded corners */
+  background-color: transparent; /* Transparent background */
+  color: #333; /* Text color */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+  /* Hover effect */
+.ddgSearch:hover {
+  background-color: #333; /* Background color on hover */
+  color: #fff; /* Text color on hover */
+}
+  
+
+/* this styling is for the personal lists ------------------------------------------------------------ */ 
+
+#editDisplay input {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 8px;
+  font-size: 14px;
+  width: 80%; /* Adjust as needed */
+  box-sizing: border-box; /* Include padding and border in width calculation */
+  display: block;
+  margin: 0 auto; 
+}
+
+#editDisplay input:hover,
+#editDisplay input:focus {
+  border-color: #61dafb;
+}
+
+/* Optional: Add a subtle box shadow for a raised effect */
+#editDisplay input:focus {
+  box-shadow: 0 0 5px rgba(97, 218, 251, 0.5);
+  outline: none;
+}
+
+
+
+#createLists{
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+  justify-content: center; /* Center items vertically */
+  background-color: rgb(14, 84, 138);
+  width: 50%;
+  margin: 10px;
+  padding: 20px 10px;
+  border-radius: 20px;
+}
+
+#displayLists{
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+  justify-content: center; /* Center items vertically */
+}
+
+#createLists ul{
+
+  list-style-type: none;
+  /* background-color: rgb(199, 224, 224); */
+  margin: 10px; 
+  padding: 10px; 
+  border-radius: 5px; 
+  text-align: center;
+  font-size: 18px; 
+  color: black; 
+  width: 100%; 
+  
+}
+
+#createLists li{
+
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+  justify-content: center; /* Center items vertically */
+
+  list-style-type: none;
+  background-color: rgb(96, 186, 255);
+  margin: 10px; 
+  padding: 10px; 
+  border-radius: 5px; 
+  text-align: center;
+  font-size: 18px; 
+  color: black; 
+
+}
+
+#innerDiv{
+  width: 100%; 
+}
+
+
+#createLists input {
+  border: 2px solid #f5f5f5;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #282c34;
+  color: #61dafb;
+  outline: none;
+  transition: border-color 0.3s ease;
+  display: block; /* or display: flex; flex-direction: column; */
+  margin-bottom: 10px; /* Optional: Add some spacing between stacked inputs */
+  width: 90%; 
+}
+
+
+#createLists input:hover,
+#createLists input:focus {
+  border-color: #61dafb;
+}
+
+/* Optional: Add a subtle box shadow for a raised effect */
+#createLists input:focus {
+  box-shadow: 0 0 10px rgba(97, 218, 251, 0.5);
+}
+
+
+.subtitle{
+  font-size: 30px; 
+  color: white; 
+  text-align: center; 
+}
+
+.createListButton {
+  
+  margin-bottom: 10px; 
+  width: 95%; 
+  display: inline-block;
+  padding: 10px 16px; /* Increased padding for a larger button */
+  font-size: 18px; /* Increased font size for better visibility */
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid #f5f5f5; /* Border color */
+  border-radius: 8px; /* Rounded corners */
+  background-color: #282c34; /* Background color */
+  color: #61dafb; /* Text color */
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* Smooth transition */
+}
+
+.createListButton:hover {
+  background-color: #61dafb; /* Background color on hover */
+  color: #282c34; /* Text color on hover */
+  border-color: #61dafb; /* Border color on hover */
+}
+
+/* Optional: Add a subtle box shadow for a raised effect */
+.createListButton:focus {
+  box-shadow: 0 0 10px rgba(97, 218, 251, 0.5);
+  outline: none;
+}
+
+
+
+
+
+#publicInput {
+  display: none; /* Hide the default checkbox */
+}
+
+
+#publicInput + label {
+  position: relative;
+  padding-left: 30px; /* Adjust the padding as needed */
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#publicInput + label:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 20px; /* Adjust the width as needed */
+  height: 20px; /* Adjust the height as needed */
+  border: 2px solid #009a12; /* Border color */
+  border-radius: 5px;
+  background-color: #fff; /* Background color */
+}
+
+#publicInput:checked + label:before {
+  background-color: #009a12; /* Background color when checked */
+  border-color: #fff; /* Border color when checked */
+}
+
+#publicInput + label:after {
+  content: 'Public';
+  position: absolute;
+  left: 35px; /* Adjust the left position as needed */
+  top: 0;
+  color: #fff; /* Text color */
 }

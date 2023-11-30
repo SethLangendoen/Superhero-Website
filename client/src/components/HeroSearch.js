@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 
+
 function HeroSearch(){
 
 	const [name, setName] = useState('');
@@ -37,8 +38,10 @@ function HeroSearch(){
 	};
 	  
 
+
 	return (
-		<div>
+		<div id = 'heroSearchDiv'>
+			<p class = "subtitle">Search for Superheroes</p>
 			<input placeholder='Name' value = {name} onChange = {(e) => setName(e.target.value)}></input>
 			<input placeholder='Race' value = {race} onChange = {(e) => setRace(e.target.value)}></input>
 			<input placeholder='Publisher' value = {publisher} onChange = {(e) => setPublisher(e.target.value)}></input>
@@ -46,18 +49,18 @@ function HeroSearch(){
 			<button id = 'Search' onClick = {searchHeroes}>Search Heroes</button>
 
 
-			<ul>
+			<ul >
 				{superheroes.map((hero) => (
 				<li key={hero.id} onClick={() => showHeroDetails(hero)}>
-					<strong>{hero.name} - {hero.Publisher} <button onClick={() => searchOnDDG(hero.name, hero.Publisher)}>Search on DDG</button></strong>
+					<strong>{hero.name} - {hero.Publisher} <button class = 'ddgSearch' onClick={() => searchOnDDG(hero.name, hero.Publisher)}>Search on DDG</button></strong>
 					{selectedHero === hero && (
-					<ul>
+					<ul class = 'secondUL'>
 						<li>Gender: {hero.Gender}</li>
 						<li>Eye Color: {hero['Eye color']}</li>
 						<li>Race: {hero.Race}</li>
 						<li>Hair Color: {hero['Hair color']}</li>
 						<li>Height: {hero.Height}</li>
-						<li>Skin Color: {hero['Skin olor']}</li>
+						<li>Skin Color: {hero['Skin color']}</li>
 						<li>Alignment: {hero.Alignment}</li>
 						<li>Weight: {hero.Weight}</li>
 					</ul>

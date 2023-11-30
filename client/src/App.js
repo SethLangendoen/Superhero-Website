@@ -8,12 +8,26 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 
 
+// function HomePage() {
+//   return (
+//     <div className = "home-page-container">
+//       <HeroSearch />
+//       <Lists />
+//     </div>
+//   );
+// }
+
+
 function HomePage() {
   return (
-    <>
-      <HeroSearch />
-      <Lists />
-    </>
+    <div className="home-page-container">
+      <div className="hero-search-container">
+        <HeroSearch />
+      </div>
+      <div className="lists-container">
+        <Lists />
+      </div>
+    </div>
   );
 }
 

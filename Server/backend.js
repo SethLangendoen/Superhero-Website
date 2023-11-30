@@ -11,7 +11,7 @@ const flash = require('express-flash');
 const session = require('express-session'); 
 const bodyParser = require('body-parser');
 const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser, findUserByEmail, findUserByNickname, findUserByToken } = require('./db');
-const { insertList, getAllLists } = require('./listDB'); 
+const { insertList, getAllLists, editList } = require('./listDB'); 
 require('dotenv').config();
 const crypto = require('crypto');
 const transporter = require('./emailConfig'); // to be used for email configuration. 
@@ -213,11 +213,18 @@ app.post('/createList', async (req, res) => {
   
   */ 
 
-  app.post('/editExistingList', (req, req) => {
+
+  
+
+  app.post('/editExistingList', async (req, res) => {
     const {newListName, newListDesc, newHeroCollection, newPublicity, createdBy, prevListName} = req.body; 
 
-    // find the list name with listName of prevListName and 
-
+    try{
+      editList(newListName, newListDesc, newHeroCollection, newPublicity, createdBy, prevListName); 
+      res.json({key: "success"}); 
+    } catch {
+      res.json({key: "failed to edit list"}); 
+    }
 
   })
 
