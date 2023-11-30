@@ -204,11 +204,29 @@ app.post('/createList', async (req, res) => {
 })
 
 
+  // Editing lists that you have created: 
+  /* 
+  ### Get the current list that is clicked on when the edit button is pressed. (using the currently logged in user's nickname and the listname. )
+  Edit Dislay: 
+  - name input, description input, hero input, publicity input, save button. 
+  - Upon saving, the previous list is updated appropriately. (inputs must all be there)
+  
+  */ 
+
+  app.post('/editExistingList', (req, req) => {
+    const {newListName, newListDesc, newHeroCollection, newPublicity, createdBy, prevListName} = req.body; 
+
+    // find the list name with listName of prevListName and 
+
+
+  })
 
 
 
 
-// used to get all the lists.
+
+
+// used to get all the lists. // THIS NEEDS TO BE UPDATED SO THAT IT ONLY DISPLAYS WHEN PUBLIC IS CHECKED
 app.post('/displayLists', async (req, res) => {
   try {
     const lists = await getAllLists();
@@ -217,6 +235,24 @@ app.post('/displayLists', async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch lists' });
   }
+});
+
+
+
+// used to get all the lists.
+app.post('/displayPersonalLists', async (req, res) => {
+
+  const {createdBy} = req.body; 
+
+  try {
+    const lists = await getAllLists();
+    const personalLists = lists.filter((list) => list.createdBy === createdBy); // filtering all the lists so that it only displays the lists with the matching logged in user's name. 
+    res.json({ data: personalLists });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch lists' });
+  }
+
 });
 
 

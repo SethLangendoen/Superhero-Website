@@ -5,16 +5,32 @@ function Lists() {
   const [listDesc, setListDesc] = useState('');
   const [heroCollection, setHeroCollection] = useState('');
   const [lists, setLists] = useState([]);
+  const [personalLists, setPersonalLists] = useState([]);
   const [selectedList, setSelectedList] = useState(null);
   const [notification, setNotification] = useState(''); 
   const [selectedHero, setSelectedHero] = useState(null);
   const [thisHeroList, setThisHeroList] = useState(null);
-  const [listOpened, setListOpened] = useState('true'); 
+  const [listOpened, setListOpened] = useState(true); 
   const [heroOpened, setHeroOpened] = useState(true); 
+  const [editDisplay, setEditDisplay] = useState(false); 
+
+  // to reduce redundancy create one of these for LoggedInUsercredentials that stores the user. 
+  // that way we only have to call get Credentials once. 
+
+
+  // these are all for editing lists: 
+  const [listNameEdit, setListNameEdit] = useState('');
+  const [listDescEdit, setListDescEdit] = useState('');
+  const [heroCollectionEdit, setHeroCollectionEdit] = useState('');
+  const [publicity, setPublicity] = useState(false); 
+
+
+
 
   useEffect(() => {
     // Fetch the lists when the component mounts
     setDBLists();
+    setLoggedInUserLists(); 
   }, []); // Empty dependency array ensures the effect runs only once when the component mounts
 
   const createList = () => {
@@ -45,9 +61,38 @@ function Lists() {
         // }
         // Fetch the updated lists after creating a new one
         setDBLists();
+        setLoggedInUserLists(); 
       })
       .catch((error) => console.log('Error Creating List:', error));
   };
+
+
+  const setLoggedInUserLists = () => {
+
+    fetch('http://localhost:3000/getCredentials')
+    .then((response) => response.json())
+    .then((data) => {
+
+      fetch('http://localhost:3000/displayPersonalLists', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          createdBy: data.key.nicknameInput,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setPersonalLists(data.data);
+        })
+        .catch((error) => console.error('Error fetching lists:', error));
+    })
+  }
+
+  
+
+
 
 
   const setDBLists = () => {
@@ -70,8 +115,10 @@ function Lists() {
     if (selectedList !== list){
       // setListOpened("true"); 
       setSelectedList(list); 
-      setHeroList(list.heroCollection) //  THIS WILL SET THE HERO LIST
+      setHeroList(list.heroCollection);  //  THIS WILL SET THE HERO LIST
+      setEditDisplay(false);  
     }
+
     // if (listOpened === "true"){
     //   setSelectedList(null); 
     //   setListOpened("false")
@@ -113,8 +160,63 @@ function Lists() {
     }
   };
 
+
+  // Editing lists that you have created: 
+  /* 
+  ### Get the current list that is clicked on when the edit button is pressed. (using the currently logged in user's nickname and the listname. )
+  Edit Dislay: 
+  - name input, description input, hero input, publicity input, save button. 
+  - Upon saving, the previous list is updated appropriately. (inputs must all be there)
+
+  */ 
+
+
+
+
+  
+  // prevListName used for finding a previous list
+  const editExistingList = (prevListName) => {
+
+    fetch('http://localhost:3000/getCredentials')
+    .then((response) => response.json())
+    .then((data) => {
+
+      fetch('http://localhost:3000/editExistingList', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          newListName: listNameEdit,
+          newListDesc: listDescEdit,
+          newHeroCollection: heroCollectionEdit,
+          newPublicity: publicity,
+          createdBy: data.key.nicknameInput,
+          prevListName: prevListName,
+
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setPersonalLists(data.data); // resetting the personal lists afterwards. 
+        })
+        .catch((error) => console.error('Error fetching lists:', error));
+    })
+  }
+
+
+
+  // to display the dropdown of the edit display
+  const selectedHeroEdit = () => {
+    setEditDisplay(!editDisplay); // this should swap the edit display to on and off. 
+  }
+
+
+
+
   return (
     <div>
+
 		
       <div id="createLists">
         <p>Create a Hero List</p>
@@ -137,18 +239,42 @@ function Lists() {
           value={heroCollection}
           onChange={(e) => setHeroCollection(e.target.value)}
         ></input>
+        
+        {/* this needs to be a part of the editing functionality. 
+        <label htmlFor = "privateCheckBox">Public</label>
+        <input type = "checkbox" ></input> */}
+
         <button onClick={createList}>Create List</button>
       </div>
 
       <p>{notification}</p>
 
+
+      <p>Personal Lists</p>
       <div id="displayLists">
         <ul>
-          {lists.map((list) => (
+          {personalLists.map((list) => (
             <li key={list._id} onClick={() => showListDetails(list)}>
               <strong>{list.listName} - Created By: {list.createdBy || 'Guest'}</strong>
               {selectedList === list && (
                 <ul>
+                  <button onClick ={() => selectedHeroEdit()}>Edit This List</button>
+                  {editDisplay &&  (
+                    <div id = "editDisplay">
+                      <label htmlFor = "nameInput">Name</label>
+                      <input id = "nameInput" onChange={(e) => setListNameEdit(e.target.value)}></input>
+                      <label htmlFor = "descriptionInput">Description</label>
+                      <input id = "descriptionInput" onChange={(e) => setListDescEdit(e.target.value)}></input>
+                      <label htmlFor = "heroInput">Heroes</label>
+                      <input id = "heroInput" placeholder='separate hero names by commas' onChange={(e) => setHeroCollectionEdit(e.target.value)}></input>
+                      <label htmlFor = "publicInput">Public</label>
+                      <input id = "publicInput" type = "checkbox" onChange={(e) => setPublicity(e.target.checked)}></input>
+                      <button onClick = {() => editExistingList(list.listName)}>Save</button>
+                    </div>
+                  )}
+
+
+
                   <li>Description: {list.listDesc}</li>
 
 
@@ -158,6 +284,10 @@ function Lists() {
 
                     <li key={hero.id} onClick={ () => showHeroDetails(hero)}>
                       <strong>{hero.name} - {hero.Publisher} <button onClick={() => searchOnDDG(hero.name, hero.Publisher)}>Search on DDG</button></strong>
+                      
+                      
+                      
+                      
                       {selectedHero === hero && (
                       <ul>
                         <li>Gender: {hero.Gender}</li>
@@ -183,7 +313,57 @@ function Lists() {
         </ul>
       </div>
 
+
+
+      <p>Publc Lists</p>
+      <div id="displayLists">
+        <ul>
+          {lists.map((list) => (
+            <li key={list._id} onClick={() => showListDetails(list)}>
+              <strong>{list.listName} - Created By: {list.createdBy || 'Guest'}</strong>
+              {selectedList === list && (
+                <ul>
+
+                  <li>Description: {list.listDesc}</li>
+
+
+                  {/* <li>Heroes: {list.heroCollection}</li> */}
+
+                  {thisHeroList && thisHeroList.map((hero) => (
+
+                    <li key={hero.id} onClick={ () => showHeroDetails(hero)}>
+                      <strong>{hero.name} - {hero.Publisher} <button onClick={() => searchOnDDG(hero.name, hero.Publisher)}>Search on DDG</button></strong>
+                      
+                      {selectedHero === hero && (
+                      <ul>
+                        <li>Gender: {hero.Gender}</li>
+                        <li>Eye Color: {hero['Eye color']}</li>
+                        <li>Race: {hero.Race}</li>
+                        <li>Hair Color: {hero['Hair color']}</li>
+                        <li>Height: {hero.Height}</li>
+                        <li>Skin Color: {hero['Skin olor']}</li>
+                        <li>Alignment: {hero.Alignment}</li>
+                        <li>Weight: {hero.Weight}</li>
+                      </ul>
+                      )}
+                    </li>
+
+                  ))}
+
+
+
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+
     </div>
+
+
+
   );
 }
 
