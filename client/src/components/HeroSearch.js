@@ -9,10 +9,10 @@ function HeroSearch(){
 	const [power, setPower] = useState('');
 	const [superheroes, setSuperheroes] = useState([]);
 	const [selectedHero, setSelectedHero] = useState(null);
-
+	
 	
 	const searchHeroes = () => {
-		fetch('http://localhost:3000/heroSearch', {
+		fetch('/heroSearch', {
 			method: 'POST',
 			headers: {
 			  'Content-Type': 'application/json',

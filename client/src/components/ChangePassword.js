@@ -9,11 +9,11 @@ function ChangePassword() {
 
   	const changePassword = () => {
 		// using getCredentials to get the token of the logged in user. 
-		fetch('http://localhost:3000/getCredentials')
+		fetch('/getCredentials')
 		.then(response => response.json())
 		.then(data => { // data holds the currently logged in user. 
 			console.log(data.key.token)
-			fetch('http://localhost:3000/changePassword', {
+			fetch('/changePassword', {
 			method: 'POST',
 			headers: {
 			'Content-Type': 'application/json',

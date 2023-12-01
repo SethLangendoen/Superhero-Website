@@ -11,7 +11,7 @@ const flash = require('express-flash');
 const session = require('express-session'); 
 const bodyParser = require('body-parser');
 const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser, findUserByEmail, findUserByNickname, findUserByToken } = require('./db');
-const { insertList, getAllLists, editList } = require('./listDB'); 
+const { insertList, getAllLists, editList, deleteList, addRating, addReview} = require('./listDB'); 
 require('dotenv').config();
 const crypto = require('crypto');
 const transporter = require('./emailConfig'); // to be used for email configuration. 
@@ -154,7 +154,7 @@ app.post('/createAccount', async (req, res) => {
       from: process.env.EMAIL_USER,
       to: emailInput,
       subject: 'Email Verification',
-      text: `Click the following link to verify your email: http://localhost:3000/verify/${token}`,
+      text: `Click the following link to verify your email: http://localhost:8080/verify/${token}`,
     }
     await transporter.sendMail(mailOptions);
 
@@ -176,14 +176,16 @@ app.post('/createAccount', async (req, res) => {
 app.post('/createList', async (req, res) => {
   const {listName, listDesc, heroCollection, createdBy} = req.body; 
   var currentDateAndTime = new Date();
-  visibility = 'private'; 
+  const visibility = 'private'; 
+  const ratings = []; 
+  const comments = []; 
 
   const allListsArray = Array.from(await getAllLists()); // converting to an array to be iterated over. 
   const sameName = allListsArray.find((list) => ((list.listName === listName) && (list.createdBy === createdBy)))
 
   if(sameName){ // sameName tells us that it found a list with a matching list name. 
     res.json({key: 'sameName'}); 
-  } else { // no lists were found with this name. We can procees to making it. 
+  } else { // no lists were found with this name. We can proceedf to making it. 
 
     try{
       const result = await insertList({
@@ -192,8 +194,9 @@ app.post('/createList', async (req, res) => {
         createdBy,
         heroCollection,
         visibility,
-        currentDateAndTime, 
-
+        currentDateAndTime,
+        ratings,
+        comments,
       });
     }catch(e){
 
@@ -230,6 +233,30 @@ app.post('/createList', async (req, res) => {
 
 
 
+app.post('/addReview', async (req, res) => {
+  const {comments, listName, createdBy} = req.body; 
+  try{
+    addReview(comments, listName, createdBy); 
+
+  } catch (e){
+    console.log("Error adding rating: " + e)
+  }
+
+})
+
+
+app.post('/addRating', async (req, res) => {
+  const {rating, listName, createdBy} = req.body; 
+  try{
+    addRating(rating, listName, createdBy); 
+
+  } catch (e){
+    console.log("Error adding rating: " + e)
+  }
+
+})
+
+
 
 
 
@@ -237,12 +264,15 @@ app.post('/createList', async (req, res) => {
 app.post('/displayLists', async (req, res) => {
   try {
     const lists = await getAllLists();
-    res.json({ data: lists });
+    // this holds reference to all the lists with visibility of public and sorts them. 
+    const publicLists = lists.filter((list) => list.visibility === 'public').sort((a, b) => new Date(b.currentDateAndTime) - new Date(a.currentDateAndTime)); 
+    res.json({ data: publicLists });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch lists' });
   }
 });
+
 
 
 
@@ -254,6 +284,7 @@ app.post('/displayPersonalLists', async (req, res) => {
   try {
     const lists = await getAllLists();
     const personalLists = lists.filter((list) => list.createdBy === createdBy); // filtering all the lists so that it only displays the lists with the matching logged in user's name. 
+
     res.json({ data: personalLists });
   } catch (error) {
     console.error(error);
@@ -265,7 +296,20 @@ app.post('/displayPersonalLists', async (req, res) => {
 
 
 
+// used to get all the lists.
+app.post('/deleteList', async (req, res) => {
 
+  const {listName, createdBy} = req.body; 
+
+  try {
+    deleteList(listName, createdBy); 
+    res.json({ key: 'success' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete list' });
+    console.log('failed to delete list'); 
+  }
+
+});
 
 
 
@@ -661,7 +705,7 @@ function getHeroNameById(id) {
 
 
 // Start the server
-const PORT = 3000;
+const PORT = 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

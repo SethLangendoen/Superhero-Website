@@ -9,7 +9,7 @@ function Header() {
 
   // Fetch user information when the component mounts
   useEffect(() => {
-    fetch('http://localhost:3000/getCredentials')
+    fetch('/getCredentials')
       .then(response => response.json())
       .then(data => {
         if (data.key.nicknameInput) {
@@ -22,7 +22,7 @@ function Header() {
   }, []); // Empty dependency array ensures this effect runs only once when the component mounts
 
   const handleLogout = () => {
-    fetch('http://localhost:3000/logout', { method: 'POST' })
+    fetch('/logout', { method: 'POST' })
       .then(response => response.json())
       .then(data => {
         console.log(data.message);

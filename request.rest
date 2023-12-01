@@ -30,7 +30,7 @@ POST http://localhost:3000/logout
 
 ###
 
-POST http://localhost:3000/heroSearch
+POST http://localhost:8080/heroSearch
 Content-Type: application/json
 
 {
@@ -57,7 +57,7 @@ Content-Type: application/json
 
 ### 
 // for the notificaiton debugging, but I couldn't get it to work. 
-POST http://localhost:3000/createList
+POST http://localhost:8080/createList
 Content-Type: application/json
 
 {

@@ -23,7 +23,6 @@ async function insertList(list) {
 }
 
 
-
 async function editList(newListName, newListDesc, newHeroCollection, newPublicity, createdBy, prevListName) {
     const listsCollection = client.db(dbName).collection('lists');
 
@@ -35,14 +34,16 @@ async function editList(newListName, newListDesc, newHeroCollection, newPublicit
   
     // Assuming you have a unique identifier like _id for your documents
     const foundList = await listsCollection.findOne({ listName: prevListName, createdBy: createdBy });
-  
-    // Define the updates based on provided parameters
+    var currentDateAndTime = new Date();
+    console.log(currentDateAndTime); 
+    // Define the updates based on provided parameters, if they are empty no update is done. 
     const updates = {
       $set: {
-        listName: newListName,
-        listDesc: newListDesc,
-        heroCollection: newHeroCollection,
+        listName: newListName !== '' ? newListName : foundList.listName,
+        listDesc: newListDesc !== '' ? newListDesc : foundList.listDesc,
+        heroCollection: newHeroCollection !== '' ? newHeroCollection : foundList.heroCollection,
         visibility: visibility,
+        currentDateAndTime: currentDateAndTime, 
       },
     };
   
@@ -59,8 +60,66 @@ async function editList(newListName, newListDesc, newHeroCollection, newPublicit
       console.error("Error updating list:", error);
     }
   }
-  
 
+
+async function addRating(rating, listName, createdBy){
+  const listsCollection = client.db(dbName).collection('lists');
+  const foundList = await listsCollection.findOne({ listName: listName, createdBy: createdBy });
+  const updates = {
+    $push: {
+      ratings: rating
+    },
+  };
+
+  try {
+    const result = await listsCollection.updateOne({ _id: foundList._id }, updates);
+    if (result.modifiedCount === 1) {
+      console.log("List updated successfully");
+    } else {
+      console.log("Failed to update the list");
+    }
+  } catch (error) {
+    console.error("Error updating list:", error);
+  }
+}
+
+async function addReview(comment, listName, createdBy){
+  const listsCollection = client.db(dbName).collection('lists');
+  const foundList = await listsCollection.findOne({ listName: listName, createdBy: createdBy });
+  const updates = {
+    $push: {
+      comments: comment
+    },
+  };
+
+  try {
+    const result = await listsCollection.updateOne({ _id: foundList._id }, updates);
+    if (result.modifiedCount === 1) {
+      console.log("list updated successfully");
+    } else {
+      console.log("Failed to update the list");
+    }
+  } catch (error) {
+    console.error("Error updating list:", error);
+  }
+}
+
+
+async function deleteList(listName, createdBy){
+  const listsCollection = client.db(dbName).collection('lists');
+
+  console.log(listName + " " + createdBy); 
+  const filter = {listName: listName, createdBy: createdBy}; 
+
+  listsCollection.deleteOne(filter, (error, result) => {
+    if (error) {
+      console.error('Error deleting document:', error);
+      return;
+    }
+    console.log('Document deleted successfully:', result);
+  })
+
+}
 
 
 
@@ -80,5 +139,8 @@ async function getAllLists() {
 module.exports = {
 	insertList, 
 	getAllLists, 
-    editList
+  editList, 
+  deleteList,
+  addRating,
+  addReview
 };

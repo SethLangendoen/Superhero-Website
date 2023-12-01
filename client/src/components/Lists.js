@@ -10,9 +10,11 @@ function Lists() {
   const [notification, setNotification] = useState(''); 
   const [selectedHero, setSelectedHero] = useState(null);
   const [thisHeroList, setThisHeroList] = useState(null);
-  const [listOpened, setListOpened] = useState(true); 
+  const [listOpened, setListOpened] = useState(false); 
   const [heroOpened, setHeroOpened] = useState(true); 
   const [editDisplay, setEditDisplay] = useState(false); 
+  const [rating, setRating] = useState(0); 
+  const [comment, setComment] = useState(''); 
 
   // to reduce redundancy create one of these for LoggedInUsercredentials that stores the user. 
   // that way we only have to call get Credentials once. 
@@ -34,10 +36,10 @@ function Lists() {
   }, []); // Empty dependency array ensures the effect runs only once when the component mounts
 
   const createList = () => {
-    fetch('http://localhost:3000/getCredentials')
+    fetch('/getCredentials')
       .then((response) => response.json())
       .then((data) => {
-        return fetch('http://localhost:3000/createList', {
+        return fetch('/createList', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -69,11 +71,11 @@ function Lists() {
 
   const setLoggedInUserLists = () => {
 
-    fetch('http://localhost:3000/getCredentials')
+    fetch('/getCredentials')
     .then((response) => response.json())
     .then((data) => {
 
-      fetch('http://localhost:3000/displayPersonalLists', {
+      fetch('/displayPersonalLists', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,13 +92,10 @@ function Lists() {
     })
   }
 
-  
-
-
 
 
   const setDBLists = () => {
-    fetch('http://localhost:3000/displayLists', {
+    fetch('/displayLists', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -113,7 +112,7 @@ function Lists() {
   const showListDetails = (list) => {
     // only set this if it's a new list, 
     if (selectedList !== list){
-      // setListOpened("true"); 
+      setListOpened(!listOpened); 
       setSelectedList(list); 
       setHeroList(list.heroCollection);  //  THIS WILL SET THE HERO LIST
       setEditDisplay(false);  
@@ -135,7 +134,7 @@ function Lists() {
 
   const setHeroList = (heroCollection) => {
     // this function needs to fetch list of names and return a list of the corresponding heroes. 
-    fetch('http://localhost:3000/getHeroesByList', {
+    fetch('/getHeroesByList', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -166,11 +165,11 @@ function Lists() {
   // prevListName used for finding a previous list
   const editExistingList = (prevListName) => {
 
-    fetch('http://localhost:3000/getCredentials')
+    fetch('/getCredentials')
     .then((response) => response.json())
     .then((data) => {
 
-      fetch('http://localhost:3000/editExistingList', {
+      fetch('/editExistingList', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -188,13 +187,107 @@ function Lists() {
         .then((response) => response.json())
         .then((data) => {
           // setPersonalLists(data.data); // resetting the personal lists afterwards. 
+          setDBLists();
           setLoggedInUserLists(); 
         })
         .catch((error) => console.error('Error fetching lists:', error));
     })
   }
 
+// used by the public lists.
+const getAverageRating = (list) => {
+  if (!list.ratings || list.ratings.length === 0) {
+    return 'none';
+  } else {
+    const ratingSum = list.ratings.reduce((sum, rating) => sum + Number(rating), 0);
+    const averageRating = ratingSum / list.ratings.length;
+    // Round to 2 decimal places
+    return (Math.round(averageRating * 100) / 100 )+ '/10';
+  }
+};
 
+const handleRatingChange = (value) => {
+  setRating(value);
+};
+
+
+
+const submitRating = (listName, createdBy) => {
+
+  console.log(rating); 
+  fetch('/addRating', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      rating: rating,
+      listName: listName,
+      createdBy: createdBy
+    }),
+  })
+  .then((response) => response.json())
+  .then(() => {
+    setDBLists();
+    setLoggedInUserLists(); 
+  })
+
+}
+
+
+
+
+const handleCommentChange = (value) => {
+  setComment(value);
+};
+
+
+
+const submitComment = (listName, createdBy) => {
+
+  fetch('/addReview', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      comments: comment,
+      listName: listName,
+      createdBy: createdBy
+    }),
+  })
+  .then((response) => response.json())
+  .then(() => {
+    setDBLists();
+    setLoggedInUserLists(); 
+  })
+
+}
+
+
+
+  const deleteList = (listName, createdBy) => {
+    const shouldDelete = window.confirm('Are you sure you want to delete this list?');
+    // If the user clicks "OK" in the confirmation dialog, proceed with deletion
+    if (shouldDelete) {
+    
+    fetch('/deleteList', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        listName: listName,
+        createdBy: createdBy,
+      }),
+    })
+    .then((response) => response.json)
+    .then(() => { // calling these in a .then statement so that they upate after delete list is finished. 
+      setDBLists(); 
+      setLoggedInUserLists(); 
+    })
+  }
+}
 
   // to display the dropdown of the edit display
   const selectedHeroEdit = () => {
@@ -249,7 +342,7 @@ function Lists() {
           <ul>
             {personalLists.map((list) => (
               <li key={list._id} onClick={() => showListDetails(list)}>
-                <strong>{list.listName} - Created By: {list.createdBy || 'Guest'}</strong>
+                <strong>{list.listName} - Created By: {list.createdBy || 'Guest'} </strong>
                 {selectedList === list && (
                   <ul>
                     <button class = 'createListButton' onClick ={() => selectedHeroEdit()}>Edit This List</button>
@@ -264,6 +357,9 @@ function Lists() {
                         <label htmlFor = "publicInput">Public</label>
                         <input id = "publicInput" type = "checkbox" onChange={(e) => setPublicity(e.target.checked)}></input>
                         <button onClick = {() => editExistingList(list.listName)}>Save</button>
+                        <button onClick = {() => deleteList(list.listName, list.createdBy)}>Delete List</button>
+
+
                       </div>
                     )}
 
@@ -279,9 +375,7 @@ function Lists() {
                       <li key={hero.id} onClick={ () => showHeroDetails(hero)}>
                         <strong>{hero.name} - {hero.Publisher} <button class = 'ddgSearch' onClick={() => searchOnDDG(hero.name, hero.Publisher)}>Search on DDG</button></strong>
                         
-                        
-                        
-                        
+
                         {selectedHero === hero && (
                         <ul>
                           <li>Gender: {hero.Gender}</li>
@@ -309,19 +403,19 @@ function Lists() {
       </div>
 
 
-      <p>Publc Lists</p>
+      <p>Public Lists</p>
       <div id="displayLists">
         <ul>
           {lists.map((list) => (
             <li key={list._id} onClick={() => showListDetails(list)}>
-              <strong>{list.listName} - Created By: {list.createdBy || 'Guest'}</strong>
-              {selectedList === list && (
+            <strong>
+              {list.listName} - Created By: {list.createdBy || 'Guest'} -- # of heroes: {list.heroCollection.trim() ? list.heroCollection.split(',').length : 0} - Rating: {getAverageRating(list)} 
+            </strong>              
+            {selectedList === list && (
                 <ul>
 
                   <li>Description: {list.listDesc}</li>
 
-
-                  {/* <li>Heroes: {list.heroCollection}</li> */}
 
                   {thisHeroList && thisHeroList.map((hero) => (
 
@@ -340,11 +434,43 @@ function Lists() {
                         <li>Weight: {hero.Weight}</li>
                       </ul>
                       )}
+
+
                     </li>
 
                   ))}
 
+                  <label htmlFor="ratingInput">Rate this list (1-10): </label>
+                  <input
+                    type="number"
+                    id="ratingInput"
+                    name="rating"
+                    min="1"
+                    max="10"
+                    onChange={(e) => handleRatingChange(e.target.value)}
+                  />
+                  <button onClick={() => submitRating(list.listName, list.createdBy)}>Submit Rating</button>
 
+
+                  <label htmlFor="commentInput">Leave a comment: </label>
+                  <input
+                    type="text"
+                    id="commentInput"
+                    name="comment"
+                    onChange={(e) => handleCommentChange(e.target.value)}
+                  />
+                  <button onClick={() => submitComment(list.listName, list.createdBy)}>Submit Comment</button>
+
+                  <ul>
+                    {/* In React, when rendering a list of elements using map, each rendered element should have a unique key prop. */}
+                    {list.comments.map((comment, index) => (
+                      <li key={index}>
+                        {list.createdBy + ": "}
+                        {new Date(list.currentDateAndTime).toLocaleDateString()}
+                        {'\n' + comment}
+                      </li>
+                    ))}
+                  </ul>
 
                 </ul>
               )}
