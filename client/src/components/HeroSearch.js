@@ -10,7 +10,6 @@ function HeroSearch(){
 	const [superheroes, setSuperheroes] = useState([]);
 	const [selectedHero, setSelectedHero] = useState(null);
 	
-	
 	const searchHeroes = () => {
 		fetch('/heroSearch', {
 			method: 'POST',
@@ -21,12 +20,12 @@ function HeroSearch(){
 		})
 		.then(response => response.json())
 		.then(data => {
-
 			setSuperheroes(data); 
-		
 			}
 		)
 	}
+
+
 
 	const showHeroDetails = (hero) => {
 		setSelectedHero(hero);

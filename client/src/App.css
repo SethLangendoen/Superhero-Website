@@ -1,31 +1,29 @@
-/* for a starry background: */ 
 
 body {
-  background-color: #cee3f8; /* Dark blue background */
+  background-color: #cee3f8; 
   font-family: 'Comic Sans MS', cursive;
   color: black; 
   margin: 0;
   padding: 0;
 }
 
-/* HomePage.css or the same CSS file where you want to keep these styles */
 
 .home-page-container {
   display: flex;
-  justify-content: space-between; /* Distribute space between components */
+  justify-content: space-between;
 }
 
 .hero-search-container, 
 .lists-container {
-  padding: 10px; /* Adjust as needed */
+  padding: 10px;
 }
 
 .hero-search-container{
-  width: 30%; /* Adjust the width for each container */
+  width: 30%; 
 }
 
 .lists-container{
-  width: 70%; /* Adjust the width for each container */
+  width: 70%; 
 
 }
 
@@ -45,13 +43,13 @@ body {
   font-size: 2em;
   margin: 0;
   letter-spacing: 2px;
-  color: #fff; /* White text color */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow for a cool effect */
-  font-family: 'Comic Sans MS', cursive; /* Superhero font */
+  color: #fff; 
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-family: 'Comic Sans MS', cursive; 
 }
 
 .header h1 span {
-  color: #3ade66; /* Superhero Pink, change to your preferred color */
+  color: #3ade66;
 }
 
 
@@ -78,7 +76,6 @@ body {
   display: block; 
 }
 
-/* Style the dropdown links */
 .dropdown-content a {
   color: black; 
   padding: 12px 16px;
@@ -90,7 +87,6 @@ body {
   background-color: #ddd; 
 }
 
-/* Style the logout button */
 .dropdown-content button {
   color: white;
   background-color: #d9534f; 
@@ -112,9 +108,9 @@ body {
 #heroSearchDiv {
 
   display: flex;
-  flex-direction: column; /* Stack items vertically */
-  align-items: center; /* Center items horizontally */
-  justify-content: center; /* Center items vertically */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; 
   background-color: rgb(14, 84, 138);
   width: 90%;
   margin: 10px;
@@ -139,7 +135,7 @@ body {
 #heroSearchDiv ul{
 
   list-style-type: none;
-  /* background-color: rgb(199, 224, 224); */
+
   margin: 10px; 
   padding: 10px; 
   border-radius: 5px; 
@@ -159,8 +155,8 @@ body {
   color: #61dafb;
   outline: none;
   transition: border-color 0.3s ease;
-  display: block; /* or display: flex; flex-direction: column; */
-  margin-bottom: 10px; /* Optional: Add some spacing between stacked inputs */
+  display: block; 
+  margin-bottom: 10px; 
   width: 90%; 
 }
 
@@ -169,7 +165,6 @@ body {
   border-color: #61dafb;
 }
 
-/* Optional: Add a subtle box shadow for a raised effect */
 #heroSearchDiv input:focus {
   box-shadow: 0 0 10px rgba(97, 218, 251, 0.5);
 }
@@ -177,26 +172,25 @@ body {
 #Search {
   width: 95%; 
   display: inline-block;
-  padding: 10px 16px; /* Increased padding for a larger button */
-  font-size: 18px; /* Increased font size for better visibility */
+  padding: 10px 16px; 
+  font-size: 18px;
   font-weight: bold;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  border: 2px solid #f5f5f5; /* Border color */
-  border-radius: 8px; /* Rounded corners */
-  background-color: #282c34; /* Background color */
-  color: #61dafb; /* Text color */
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* Smooth transition */
+  border: 2px solid #f5f5f5; 
+  border-radius: 8px;
+  background-color: #282c34; 
+  color: #61dafb;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 #Search:hover {
-  background-color: #61dafb; /* Background color on hover */
-  color: #282c34; /* Text color on hover */
-  border-color: #61dafb; /* Border color on hover */
+  background-color: #61dafb; 
+  color: #282c34; 
+  border-color: #61dafb; 
 }
 
-/* Optional: Add a subtle box shadow for a raised effect */
 #Search:focus {
   box-shadow: 0 0 10px rgba(97, 218, 251, 0.5);
   outline: none;
@@ -210,16 +204,16 @@ body {
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  border: 2px solid #333; /* Border color */
-  border-radius: 8px; /* Rounded corners */
-  background-color: transparent; /* Transparent background */
-  color: #333; /* Text color */
-  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+  border: 2px solid #333;
+  border-radius: 8px; 
+  background-color: transparent;
+  color: #333; 
+  transition: background-color 0.3s ease, color 0.3s ease; 
 }
-  /* Hover effect */
+
 .ddgSearch:hover {
-  background-color: #333; /* Background color on hover */
-  color: #fff; /* Text color on hover */
+  background-color: #333; 
+  color: #fff;
 }
   
 
@@ -230,8 +224,8 @@ body {
   border-radius: 5px;
   padding: 8px;
   font-size: 14px;
-  width: 80%; /* Adjust as needed */
-  box-sizing: border-box; /* Include padding and border in width calculation */
+  width: 80%; 
+  box-sizing: border-box; 
   display: block;
   margin: 0 auto; 
 }
@@ -241,7 +235,7 @@ body {
   border-color: #61dafb;
 }
 
-/* Optional: Add a subtle box shadow for a raised effect */
+
 #editDisplay input:focus {
   box-shadow: 0 0 5px rgba(97, 218, 251, 0.5);
   outline: none;
@@ -251,9 +245,9 @@ body {
 
 #createLists{
   display: flex;
-  flex-direction: column; /* Stack items vertically */
-  align-items: center; /* Center items horizontally */
-  justify-content: center; /* Center items vertically */
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center; 
   background-color: rgb(14, 84, 138);
   width: 50%;
   margin: 10px;
@@ -261,17 +255,10 @@ body {
   border-radius: 20px;
 }
 
-#displayLists{
-  display: flex;
-  flex-direction: column; /* Stack items vertically */
-  align-items: center; /* Center items horizontally */
-  justify-content: center; /* Center items vertically */
-}
-
 #createLists ul{
 
   list-style-type: none;
-  /* background-color: rgb(199, 224, 224); */
+
   margin: 10px; 
   padding: 10px; 
   border-radius: 5px; 
@@ -285,9 +272,9 @@ body {
 #createLists li{
 
   display: flex;
-  flex-direction: column; /* Stack items vertically */
-  align-items: center; /* Center items horizontally */
-  justify-content: center; /* Center items vertically */
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
 
   list-style-type: none;
   background-color: rgb(96, 186, 255);
@@ -302,10 +289,15 @@ body {
 
 #innerDiv{
   width: 100%; 
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
 }
 
 
 #createLists input {
+
   border: 2px solid #f5f5f5;
   border-radius: 8px;
   padding: 10px;
@@ -314,8 +306,8 @@ body {
   color: #61dafb;
   outline: none;
   transition: border-color 0.3s ease;
-  display: block; /* or display: flex; flex-direction: column; */
-  margin-bottom: 10px; /* Optional: Add some spacing between stacked inputs */
+  display: block; 
+  margin-bottom: 10px;
   width: 90%; 
 }
 
@@ -325,7 +317,6 @@ body {
   border-color: #61dafb;
 }
 
-/* Optional: Add a subtle box shadow for a raised effect */
 #createLists input:focus {
   box-shadow: 0 0 10px rgba(97, 218, 251, 0.5);
 }
@@ -342,26 +333,25 @@ body {
   margin-bottom: 10px; 
   width: 95%; 
   display: inline-block;
-  padding: 10px 16px; /* Increased padding for a larger button */
-  font-size: 18px; /* Increased font size for better visibility */
+  padding: 10px 16px;
+  font-size: 18px; 
   font-weight: bold;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  border: 2px solid #f5f5f5; /* Border color */
-  border-radius: 8px; /* Rounded corners */
-  background-color: #282c34; /* Background color */
-  color: #61dafb; /* Text color */
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* Smooth transition */
+  border: 2px solid #f5f5f5;
+  border-radius: 8px;
+  background-color: #282c34; 
+  color: #61dafb; 
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .createListButton:hover {
-  background-color: #61dafb; /* Background color on hover */
-  color: #282c34; /* Text color on hover */
-  border-color: #61dafb; /* Border color on hover */
+  background-color: #61dafb; 
+  color: #282c34;
+  border-color: #61dafb; 
 }
 
-/* Optional: Add a subtle box shadow for a raised effect */
 .createListButton:focus {
   box-shadow: 0 0 10px rgba(97, 218, 251, 0.5);
   outline: none;
@@ -372,13 +362,13 @@ body {
 
 
 #publicInput {
-  display: none; /* Hide the default checkbox */
+  display: none;
 }
 
 
 #publicInput + label {
   position: relative;
-  padding-left: 30px; /* Adjust the padding as needed */
+  padding-left: 30px;
   cursor: pointer;
   font-size: 16px;
 }
@@ -388,22 +378,119 @@ body {
   position: absolute;
   left: 0;
   top: 0;
-  width: 20px; /* Adjust the width as needed */
-  height: 20px; /* Adjust the height as needed */
-  border: 2px solid #009a12; /* Border color */
+  width: 20px; 
+  height: 20px;
+  border: 2px solid #009a12; 
   border-radius: 5px;
-  background-color: #fff; /* Background color */
+  background-color: #fff; 
 }
 
 #publicInput:checked + label:before {
-  background-color: #009a12; /* Background color when checked */
-  border-color: #fff; /* Border color when checked */
+  background-color: #009a12;
+  border-color: #fff; 
 }
 
 #publicInput + label:after {
   content: 'Public';
   position: absolute;
-  left: 35px; /* Adjust the left position as needed */
+  left: 35px; 
   top: 0;
-  color: #fff; /* Text color */
+  color: #fff;
+}
+
+#publicAndPrivateListBox{
+  display: flex;
+  flex-direction: row; 
+  align-items: flex-start; 
+}
+
+/* aligns the personal lists */
+#displayLists{
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+}
+
+/* aligns the public lists */
+#displayPublicLists{
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center; 
+  background-color: rgb(14, 84, 138);
+  width: 50%;
+  margin: 10px;
+  padding: 20px 10px;
+  border-radius: 20px;
+}
+
+#displayPublicLists ul{
+  list-style-type: none;
+  margin: 10px; 
+  padding: 10px; 
+  border-radius: 5px; 
+  text-align: center;
+  font-size: 18px; 
+  color: black; 
+  width: 100%; 
+}
+
+
+#displayPublicLists li{
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  
+  list-style-type: none;
+  background-color: rgb(96, 186, 255);
+  margin: 10px; 
+  padding: 10px; 
+  border-radius: 5px; 
+  text-align: center;
+  font-size: 18px; 
+  color: black; 
+}
+
+
+/* this is for public list comments */ 
+#commentsList {
+  /* display: flex;
+  flex-direction: column; 
+  list-style: none; */
+  padding: 0;
+}
+
+
+#commentsList li {
+  /* border-left: 10px solid darkblue;  */
+  margin-bottom: 8px;
+  font-size: 14px;
+  /* white-space: pre-line;
+  display: flex;
+  flex-direction: column; */
+}
+
+
+
+.commentHeader {
+  text-align: left; 
+  
+}
+
+.commentText {
+  text-align: left;
+}
+
+.commentDate {
+  color: grey
+}
+
+.commenterName {
+  color: red
 }

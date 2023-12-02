@@ -3,6 +3,7 @@ import Header from './components/Header';
 import ChangePassword from './components/ChangePassword'; 
 import HeroSearch from './components/HeroSearch'; 
 import Lists from './components/Lists'; 
+import SiteMaintenance from './SiteMaintenance'; 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import './App.css';
@@ -34,7 +35,9 @@ function App() {
         
         <Route path = '/index.html' element = {<HomePage />}></Route>
 
-          
+        
+        <Route path = '/site-maintenance' element = {<SiteMaintenance />}></Route>
+
         <Route path = '/change-password' element = {<ChangePassword />}></Route>
 
         </Routes>

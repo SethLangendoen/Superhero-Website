@@ -32,7 +32,6 @@ goButton.addEventListener('click', function(){
 			  notification.innerHTML = 'Your email or password is incorrect'; 
 			} else if (data.key === 'success'){
 				window.location.href = '/index.html';
-
 			}
 		  })
 	}

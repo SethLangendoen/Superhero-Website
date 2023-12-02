@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
+import { useRevalidator } from 'react-router-dom';
 
 function Lists() {
   const [listName, setListName] = useState('');
@@ -15,6 +16,11 @@ function Lists() {
   const [editDisplay, setEditDisplay] = useState(false); 
   const [rating, setRating] = useState(0); 
   const [comment, setComment] = useState(''); 
+  const [publicListNotification, setPubliListNotification] = useState(''); 
+  const [personalListNotification, setPersonalListNotification] = useState(''); 
+  const [prevList, setPrevList] = useState(null);
+  const [thisListDisplay, setThisListDisplay] = useState(false);
+
 
   // to reduce redundancy create one of these for LoggedInUsercredentials that stores the user. 
   // that way we only have to call get Credentials once. 
@@ -29,43 +35,59 @@ function Lists() {
 
 
 
-  useEffect(() => {
-    // Fetch the lists when the component mounts
-    setDBLists();
-    setLoggedInUserLists(); 
+   useEffect(() => {
+    const fetchData = async () => {
+      // Fetch the lists when the component mounts
+      await setDBLists();
+      setLoggedInUserLists(); 
+    };
+    fetchData(); 
   }, []); // Empty dependency array ensures the effect runs only once when the component mounts
 
   const createList = () => {
+    
     fetch('/getCredentials')
       .then((response) => response.json())
       .then((data) => {
-        return fetch('/createList', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            listName: listName,
-            listDesc: listDesc,
-            heroCollection: heroCollection,
-            createdBy: data.key.nicknameInput,
-          }),
-        });
+
+        if(!data.key.token){
+          setPersonalListNotification('Guest users may not create lists'); 
+          return
+        }
+
+        if(listName === ''){
+          setPersonalListNotification('You must enter a list name'); 
+        } else if (listDesc === ''){
+          setPersonalListNotification('You must enter a description'); 
+        } else if (heroCollection === ''){
+          setPersonalListNotification('You must select at least one hero')
+        } else {
+          setPersonalListNotification(''); 
+          return fetch('/createList', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': data.key.token,	
+              },
+            body: JSON.stringify({
+              listName: listName,
+              listDesc: listDesc,
+              heroCollection: heroCollection,
+              createdBy: data.key.nicknameInput,
+            }),
+          });
+
+        }
       })
-      .then((data) => { // code was for notifications. 
-        // if(data.key){
-        //   setNotification('You already have a list with that name!'); 
-        //   console.log(notification);
-        //   console.log('wtfff'); 
-        // } else {
-        //   setNotification(''); // everything worked to plan and we can remove the notification. 
-        //   console.log(notification); 
-        // }
-        // Fetch the updated lists after creating a new one
-        setDBLists();
+      .then(async (data) => {
+        await setDBLists();
         setLoggedInUserLists(); 
+
       })
-      .catch((error) => console.log('Error Creating List:', error));
+
   };
 
 
@@ -74,6 +96,7 @@ function Lists() {
     fetch('/getCredentials')
     .then((response) => response.json())
     .then((data) => {
+
 
       fetch('/displayPersonalLists', {
         method: 'POST',
@@ -94,7 +117,8 @@ function Lists() {
 
 
 
-  const setDBLists = () => {
+  // setting the public db lists.
+  const setDBLists = async () => {
     fetch('/displayLists', {
       method: 'POST',
       headers: {
@@ -105,24 +129,28 @@ function Lists() {
       .then((data) => {
         setLists(data.data);
       })
-      .catch((error) => console.error('Error fetching lists:', error));
+      .catch((error) => console.log('Error fetching lists'));
   };
+
 
 
   const showListDetails = (list) => {
-    // only set this if it's a new list, 
-    if (selectedList !== list){
-      setListOpened(!listOpened); 
-      setSelectedList(list); 
-      setHeroList(list.heroCollection);  //  THIS WILL SET THE HERO LIST
-      setEditDisplay(false);  
-    }
+    if (prevList === list) {
+     setThisListDisplay(!thisListDisplay); 
 
-    // if (listOpened === "true"){
-    //   setSelectedList(null); 
-    //   setListOpened("false")
-    // }
+    } else {
+      setThisListDisplay(!thisListDisplay); 
+      // Only set this if it's a new list
+      setListOpened(!listOpened);
+      setSelectedList(list);
+      setHeroList(list.heroCollection);
+      setEditDisplay(false);
+      setPrevList(list);
+    }
   };
+
+
+
 
   const searchOnDDG = (name, publisher) => {
     const ddgSearchURL = `https://duckduckgo.com/?q=${encodeURIComponent(name + " " + publisher)}&ia=web`;
@@ -186,6 +214,14 @@ function Lists() {
       })
         .then((response) => response.json())
         .then((data) => {
+
+
+          setListNameEdit(''); 
+          setListDescEdit(''); 
+          setHeroCollectionEdit(''); 
+          setPublicity(false); 
+
+
           // setPersonalLists(data.data); // resetting the personal lists afterwards. 
           setDBLists();
           setLoggedInUserLists(); 
@@ -193,6 +229,8 @@ function Lists() {
         .catch((error) => console.error('Error fetching lists:', error));
     })
   }
+
+
 
 // used by the public lists.
 const getAverageRating = (list) => {
@@ -202,7 +240,7 @@ const getAverageRating = (list) => {
     const ratingSum = list.ratings.reduce((sum, rating) => sum + Number(rating), 0);
     const averageRating = ratingSum / list.ratings.length;
     // Round to 2 decimal places
-    return (Math.round(averageRating * 100) / 100 )+ '/10';
+    return (Math.round(averageRating * 100) / 100 ) + '/10';
   }
 };
 
@@ -210,59 +248,90 @@ const handleRatingChange = (value) => {
   setRating(value);
 };
 
-
-
-const submitRating = (listName, createdBy) => {
-
-  console.log(rating); 
-  fetch('/addRating', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      rating: rating,
-      listName: listName,
-      createdBy: createdBy
-    }),
-  })
-  .then((response) => response.json())
-  .then(() => {
-    setDBLists();
-    setLoggedInUserLists(); 
-  })
-
-}
-
-
-
-
 const handleCommentChange = (value) => {
   setComment(value);
 };
-
-
-
-const submitComment = (listName, createdBy) => {
-
-  fetch('/addReview', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      comments: comment,
-      listName: listName,
-      createdBy: createdBy
-    }),
-  })
+ 
+// reconstructing this to be one big review. 
+const submitReview = (listName, createdBy, comment, rating) => { // pput the rating and comment into here, then set them using setters here. 
+  fetch('/getCredentials')
   .then((response) => response.json())
-  .then(() => {
-    setDBLists();
-    setLoggedInUserLists(); 
-  })
+  .then(async (data) => {
+  console.log(rating); 
+  console.log(comment);
+  if ((10 >= rating >= 1) && (rating != null)){
+    setRating(null); 
+    fetch('/addRating', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': data.key.token,	
+      },
+      body: JSON.stringify({
+        rating: rating,
+        listName: listName,
+        createdBy: createdBy
+      }),
+    })
+  }
+  if(comment != ''){
+    fetch('/addReview', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': data.key.token,	
+      },
+      body: JSON.stringify({
+        comments: comment,
+        listName: listName,
+        createdBy: createdBy
+      }),
+    })
+    .then((response) => response.json())
+    .then(async (data) => {
+      // await setDBLists();
+      // setLoggedInUserLists(); 
+    }) 
+  }
 
+  if(!data.key.token){ // if it is a guest user. 
+    setPubliListNotification('Guests users may not leave reviews'); 
+  }
+  setDBLists();
+  setLoggedInUserLists(); 
+})
 }
+
+
+
+// const submitComment = (listName, createdBy) => {
+//   fetch('/getCredentials')
+//   .then((response) => response.json())
+//   .then(async (data) => {
+//   await fetch('/addReview', {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'Authorization': data.key.token,	
+
+//     },
+//     body: JSON.stringify({
+//       comments: comment,
+//       listName: listName,
+//       createdBy: createdBy
+//     }),
+//   })
+//   .then((response) => response.json())
+//   .then(async () => {
+//     setDBLists();
+//     setLoggedInUserLists(); 
+//   })
+//   if(!data.key.token){ // if it is a guest user. 
+//     setPubliListNotification('Guests users may not leave reviews'); 
+//   }
+
+//   })
+// }
 
 
 
@@ -282,7 +351,8 @@ const submitComment = (listName, createdBy) => {
       }),
     })
     .then((response) => response.json)
-    .then(() => { // calling these in a .then statement so that they upate after delete list is finished. 
+    .then(async () => { // calling these in a .then statement so that they upate after delete list is finished. 
+      
       setDBLists(); 
       setLoggedInUserLists(); 
     })
@@ -300,7 +370,7 @@ const submitComment = (listName, createdBy) => {
   return (
     <div>
 
-		
+  <div id = "publicAndPrivateListBox">
     <div id = "createLists">
         <div id = 'innerDiv'>
           <p class = "subtitle">Create a Hero List</p>
@@ -333,151 +403,174 @@ const submitComment = (listName, createdBy) => {
           <button class = 'createListButton' onClick={createList}>Create List</button>
         </div>
 
-        <p>{notification}</p>
+        <p>{personalListNotification}</p>
 
-
-
-        <p class = "subtitle"> Lists You've Made</p>
-        <div id="displayLists">
-          <ul>
-            {personalLists.map((list) => (
-              <li key={list._id} onClick={() => showListDetails(list)}>
-                <strong>{list.listName} - Created By: {list.createdBy || 'Guest'} </strong>
-                {selectedList === list && (
-                  <ul>
-                    <button class = 'createListButton' onClick ={() => selectedHeroEdit()}>Edit This List</button>
-                    {editDisplay &&  (
-                      <div id = "editDisplay">
-                        {/* <label htmlFor = "nameInput">Name</label> */}
-                        <input placeholder = "Name" id = "nameInput" onChange={(e) => setListNameEdit(e.target.value)}></input>
-                        {/* <label htmlFor = "descriptionInput">Description</label> */}
-                        <input placeholder = "Description" id = "descriptionInput" onChange={(e) => setListDescEdit(e.target.value)}></input>
-                        {/* <label htmlFor = "heroInput">Heroes</label> */}
-                        <input id = "heroInput" placeholder='separate hero names by commas' onChange={(e) => setHeroCollectionEdit(e.target.value)}></input>
-                        <label htmlFor = "publicInput">Public</label>
-                        <input id = "publicInput" type = "checkbox" onChange={(e) => setPublicity(e.target.checked)}></input>
-                        <button onClick = {() => editExistingList(list.listName)}>Save</button>
-                        <button onClick = {() => deleteList(list.listName, list.createdBy)}>Delete List</button>
-
-
-                      </div>
-                    )}
-
-
-
-                    <li>{list.listDesc}</li>
-
-
-                    {/* <li>Heroes: {list.heroCollection}</li> */}
-
-                    {thisHeroList && thisHeroList.map((hero) => (
-
-                      <li key={hero.id} onClick={ () => showHeroDetails(hero)}>
-                        <strong>{hero.name} - {hero.Publisher} <button class = 'ddgSearch' onClick={() => searchOnDDG(hero.name, hero.Publisher)}>Search on DDG</button></strong>
-                        
-
-                        {selectedHero === hero && (
+          <p class = "subtitle"> Lists You've Made</p>
+          <div id="displayLists">
+            <ul>
+              {personalLists.map((list) => (
+                <li>
+                  <strong key={list._id} onClick={() => showListDetails(list)}>{list.listName} - Created By: {list.createdBy || 'Guest'} </strong>
+                  {thisListDisplay && (
+                      <div>
+                            
+                            {selectedList === list && (
                         <ul>
-                          <li>Gender: {hero.Gender}</li>
-                          <li>Eye Color: {hero['Eye color']}</li>
-                          <li>Race: {hero.Race}</li>
-                          <li>Hair Color: {hero['Hair color']}</li>
-                          <li>Height: {hero.Height}</li>
-                          <li>Skin Color: {hero['Skin olor']}</li>
-                          <li>Alignment: {hero.Alignment}</li>
-                          <li>Weight: {hero.Weight}</li>
+                          <button class = 'createListButton' onClick ={() => selectedHeroEdit()}>Edit This List</button>
+                          {editDisplay &&  (
+                            <div id = "editDisplay">
+                              {/* <label htmlFor = "nameInput">Name</label> */}
+                              <input placeholder = "Name" id = "nameInput" onChange={(e) => setListNameEdit(e.target.value)}></input>
+                              {/* <label htmlFor = "descriptionInput">Description</label> */}
+                              <input placeholder = "Description" id = "descriptionInput" onChange={(e) => setListDescEdit(e.target.value)}></input>
+                              {/* <label htmlFor = "heroInput">Heroes</label> */}
+                              <input id = "heroInput" placeholder='separate hero names by commas' onChange={(e) => setHeroCollectionEdit(e.target.value)}></input>
+                              <label htmlFor = "publicInput">Public</label>
+                              <input id = "publicInput" type = "checkbox" onChange={(e) => setPublicity(e.target.checked)}></input>
+                              <button onClick = {() => editExistingList(list.listName)}>Save</button>
+                              <button onClick = {() => deleteList(list.listName, list.createdBy)}>Delete List</button>
+
+
+                            </div>
+                          )}
+
+
+
+                          <li>{list.listDesc}</li>
+
+
+                          {/* <li>Heroes: {list.heroCollection}</li> */}
+
+                          {thisHeroList && thisHeroList.map((hero) => (
+
+                            <li key={hero.id} onClick={ () => showHeroDetails(hero)}>
+                              <strong>{hero.name} - {hero.Publisher} <button class = 'ddgSearch' onClick={() => searchOnDDG(hero.name, hero.Publisher)}>Search on DDG</button></strong>
+                              
+
+                              {selectedHero === hero && (
+                              <ul>
+                                <li>Gender: {hero.Gender}</li>
+                                <li>Eye Color: {hero['Eye color']}</li>
+                                <li>Race: {hero.Race}</li>
+                                <li>Hair Color: {hero['Hair color']}</li>
+                                <li>Height: {hero.Height}</li>
+                                <li>Skin Color: {hero['Skin olor']}</li>
+                                <li>Alignment: {hero.Alignment}</li>
+                                <li>Weight: {hero.Weight}</li>
+                              </ul>
+                              )}
+                            </li>
+
+                          ))}
+
+
+
                         </ul>
-                        )}
-                      </li>
-
-                    ))}
-
-
-
-                  </ul>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-
-      <p>Public Lists</p>
-      <div id="displayLists">
-        <ul>
-          {lists.map((list) => (
-            <li key={list._id} onClick={() => showListDetails(list)}>
-            <strong>
-              {list.listName} - Created By: {list.createdBy || 'Guest'} -- # of heroes: {list.heroCollection.trim() ? list.heroCollection.split(',').length : 0} - Rating: {getAverageRating(list)} 
-            </strong>              
-            {selectedList === list && (
-                <ul>
-
-                  <li>Description: {list.listDesc}</li>
-
-
-                  {thisHeroList && thisHeroList.map((hero) => (
-
-                    <li key={hero.id} onClick={ () => showHeroDetails(hero)}>
-                      <strong>{hero.name} - {hero.Publisher} <button onClick={() => searchOnDDG(hero.name, hero.Publisher)}>Search on DDG</button></strong>
-                      
-                      {selectedHero === hero && (
-                      <ul>
-                        <li>Gender: {hero.Gender}</li>
-                        <li>Eye Color: {hero['Eye color']}</li>
-                        <li>Race: {hero.Race}</li>
-                        <li>Hair Color: {hero['Hair color']}</li>
-                        <li>Height: {hero.Height}</li>
-                        <li>Skin Color: {hero['Skin olor']}</li>
-                        <li>Alignment: {hero.Alignment}</li>
-                        <li>Weight: {hero.Weight}</li>
-                      </ul>
                       )}
 
 
-                    </li>
 
-                  ))}
-
-                  <label htmlFor="ratingInput">Rate this list (1-10): </label>
-                  <input
-                    type="number"
-                    id="ratingInput"
-                    name="rating"
-                    min="1"
-                    max="10"
-                    onChange={(e) => handleRatingChange(e.target.value)}
-                  />
-                  <button onClick={() => submitRating(list.listName, list.createdBy)}>Submit Rating</button>
+                      </div>
+                  )}
+                   
+                  
+                </li>
+              ))}
+            </ul>
+          </div>
+          </div>
 
 
-                  <label htmlFor="commentInput">Leave a comment: </label>
-                  <input
-                    type="text"
-                    id="commentInput"
-                    name="comment"
-                    onChange={(e) => handleCommentChange(e.target.value)}
-                  />
-                  <button onClick={() => submitComment(list.listName, list.createdBy)}>Submit Comment</button>
+          <div id="displayPublicLists">
+            <p class = "subtitle">Public Lists</p>
+            <p>{publicListNotification}</p>
+            <ul>
+              {lists.map((list) => (
+                <li>
+                  <strong key={list._id} onClick={() => showListDetails(list)}>
+                    {list.listName} - Created By: {list.createdBy || 'Guest'} Contains {list.heroCollection.trim() ? list.heroCollection.split(',').length : 0} heroes - Rating: {getAverageRating(list)} 
+                  </strong>        
+                    
+                  {thisListDisplay && (
+                  <div>      
+                    {selectedList === list && (
+                        <ul>
 
-                  <ul>
-                    {/* In React, when rendering a list of elements using map, each rendered element should have a unique key prop. */}
-                    {list.comments.map((comment, index) => (
-                      <li key={index}>
-                        {list.createdBy + ": "}
-                        {new Date(list.currentDateAndTime).toLocaleDateString()}
-                        {'\n' + comment}
-                      </li>
-                    ))}
-                  </ul>
+                          <li>{list.listDesc}</li>
 
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
+
+                          {thisHeroList && thisHeroList.map((hero) => (
+
+                            <li key={hero.id} onClick={ () => showHeroDetails(hero)}>
+                              <strong>{hero.name} - {hero.Publisher} <button class = 'ddgSearch' onClick={() => searchOnDDG(hero.name, hero.Publisher)}>Search on DDG</button></strong>
+                              
+                              {selectedHero === hero && (
+                              <ul>
+                                <li>Gender: {hero.Gender}</li>
+                                <li>Eye Color: {hero['Eye color']}</li>
+                                <li>Race: {hero.Race}</li>
+                                <li>Hair Color: {hero['Hair color']}</li>
+                                <li>Height: {hero.Height}</li>
+                                <li>Skin Color: {hero['Skin olor']}</li>
+                                <li>Alignment: {hero.Alignment}</li>
+                                <li>Weight: {hero.Weight}</li>
+                              </ul>
+                              )}
+
+
+                            </li>
+
+                          ))}
+
+                          <label htmlFor="ratingInput">Rate this list (1-10): </label>
+                          <input
+                            type="number"
+                            id="ratingInput"
+                            name="rating"
+                            min="1"
+                            max="10"
+                            onChange={(e) => handleRatingChange(e.target.value)}
+                          />
+                          {/* <button onClick={() => submitRating(list.listName, list.createdBy)}>Submit Rating</button> */}
+
+                          <label htmlFor="commentInput">Leave a comment: </label>
+                          <input
+                            type="text"
+                            id="commentInput"
+                            name="comment"
+                            onChange={(e) => handleCommentChange(e.target.value)}
+                          />
+                          <button onClick={() => submitReview(list.listName, list.createdBy, comment, rating)}>Submit Review</button>
+
+
+                          <ul id="commentsList">
+                            {list.comments.map((comment, index) => (
+                              <li key={index}>
+                                <div class="commentHeader">
+                                  <span class="commentDate">{new Date(list.currentDateAndTime).toLocaleDateString()}</span>
+                                </div>
+
+                                  <span class="commenterName">{list.createdBy + " says:"}</span>
+                                <div class="commentText">{comment}</div>
+                              </li>
+                            ))}
+                          </ul>
+
+
+                        </ul>
+                      )}
+                
+
+
+                  </div>
+                )}
+
+                </li>
+              ))}
+            </ul>
+          </div>
       </div>
+
 
 
     </div>

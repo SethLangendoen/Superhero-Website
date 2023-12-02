@@ -66,3 +66,18 @@ Content-Type: application/json
   "heroCollection": "superman",
   "createdBy": "Seth",
 }
+
+
+###
+
+POST http://localhost:8080/createAccount
+Content-Type: application/json
+
+{
+  "nicknameInput": "testUser",
+  "emailInput": "test@example.com",
+  "passwordInput": "testPassword"
+}
+
+
+

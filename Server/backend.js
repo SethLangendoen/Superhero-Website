@@ -131,9 +131,11 @@ app.post('/createAccount', async (req, res) => {
     res.json({key: 'userExists'})
   } else {
     const hashedPassword = await bcrypt.hash(passwordInput, 10) // 10 describes the security intensity. 10 is quick as well. 
-    disabled = false; // the admin can disable accounts using this.
-    isVerified = false; // will be used to determine if the user's email has been verified.
+    const disabled = false; // the admin can disable accounts using this.
+    const isAdmin = false; 
+    const isVerified = false; // will be used to determine if the user's email has been verified.
     token = generateRandomToken();
+
       // if(findUserByEmail(email) == null){ // no user exists in the db so we insert a user.
     try{
       const result = await insertUser({
@@ -141,9 +143,11 @@ app.post('/createAccount', async (req, res) => {
         emailInput,
         hashedPassword,
         disabled,
+        isAdmin,
         isVerified,
-        token
+        token,
       });
+      console.log(result); 
     }catch(e){
 
     }
@@ -173,7 +177,7 @@ app.post('/createAccount', async (req, res) => {
 
 
 
-app.post('/createList', async (req, res) => {
+app.post('/createList', authenticateJWT, async (req, res) => {
   const {listName, listDesc, heroCollection, createdBy} = req.body; 
   var currentDateAndTime = new Date();
   const visibility = 'private'; 
@@ -233,23 +237,24 @@ app.post('/createList', async (req, res) => {
 
 
 
-app.post('/addReview', async (req, res) => {
+app.post('/addReview', authenticateJWT, async (req, res) => {
   const {comments, listName, createdBy} = req.body; 
   try{
     addReview(comments, listName, createdBy); 
-
+    res.json({key: 'success'}); 
   } catch (e){
     console.log("Error adding rating: " + e)
   }
-
 })
 
 
-app.post('/addRating', async (req, res) => {
+
+
+app.post('/addRating', authenticateJWT, async (req, res) => {
   const {rating, listName, createdBy} = req.body; 
   try{
     addRating(rating, listName, createdBy); 
-
+    res.json({key: 'success'}); 
   } catch (e){
     console.log("Error adding rating: " + e)
   }

@@ -1,52 +1,29 @@
-// Select the necessary input elements
 const createAccountButton = document.getElementById('createAccountButton');
 const noti = document.getElementById('noti')
-// createAccountButton.disabled = true; 
-// const notification = document.getElementById('notification'); 
 
 
-
-// Add event listeners to inputs
-// nicknameInput.addEventListener('input', validateForm);
-// emailInput.addEventListener('input', validateForm);
-// passwordInput.addEventListener('input', validateForm);
-
-// // Function to validate the form and enable/disable the button
-// function validateForm() {
-//     const nickname = nicknameInput.value.trim();
-//     const email = emailInput.value.trim();
-//     const password = passwordInput.value.trim();
-
-//     // Enable the button only if all fields are filled
-//     createAccountButton.disabled = !(nickname && email && password);
-// }
-
-
-// function isValidEmail(email) {
-//     // Define the regular expression pattern for a valid email address
-//     const pattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-//     return pattern.test(email);
-// }
-
-
+function isValidEmail(email) {
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	return emailRegex.test(email);
+  }
 
 createAccountButton.addEventListener('click', function(){
   const nicknameInput = document.getElementById('nickname').value;
   const emailInput = document.getElementById('email').value;
   const passwordInput = document.getElementById('password').value;
-	// now we are fetching the /login route and putting the values in ourselves.
-  
+
+
   if(nicknameInput == ''){
     noti.innerHTML = 'Please enter a nickname'; 
   } else if (emailInput == ''){
 		noti.innerHTML = 'Please enter an email'; 
-	} // IMPORTANT: there needs to be something to ensure the email in in valid format before moving on to password logic. 
-	
-	else if (passwordInput == ''){
+  } else if (!isValidEmail(emailInput)) {
+	noti.innerHTML = 'Please enter a valid email';
+  } else if (passwordInput == ''){
 		noti.innerHTML = 'Please enter a password'; 
-	} else {
+  } else {
 
-		fetch('http://localhost:3000/createAccount', {
+		fetch('http://localhost:8080/createAccount', {
 			method: 'POST',
 			headers: {
 			'Content-Type': 'application/json',

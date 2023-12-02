@@ -5,17 +5,20 @@ import { Link } from 'react-router-dom';
 
 function Header() {
   const [loggedInUser, setLoggedInUser] = useState(null);
-
+  const [user, setUser] = useState([]);
+  const [sm, setSM] = useState(false); 
 
   // Fetch user information when the component mounts
   useEffect(() => {
     fetch('/getCredentials')
       .then(response => response.json())
       .then(data => {
+        setUser(data); // setting the user variable to the user's reference to the json file. 
         if (data.key.nicknameInput) {
           setLoggedInUser(data.key.nicknameInput);
-		  var token = data.key.token; 
-		  console.log("token: " + token); 
+		      var token = data.key.token; 
+		      console.log("token: " + token); 
+          isAdmin(); 
         }
       })
       .catch(error => console.error('Error fetching user information:', error));
@@ -32,6 +35,11 @@ function Header() {
       .catch(error => console.error('Error logging out:', error));
   };
 
+	const isAdmin = () => {
+    if(user.isAdmin === true){
+      setSM(true); 
+    }
+	}
 
 
 
@@ -45,6 +53,9 @@ function Header() {
       <div className="settings-dropdown">
         <p>Settings</p>
         <div className="dropdown-content">
+          {sm && (
+          <Link to="/site-maintenance">Site Maintenance</Link>
+          )}
           <Link to="/change-password">Change Password</Link>
           <button onClick={handleLogout}>Logout</button>
         </div>
