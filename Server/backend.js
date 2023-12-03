@@ -10,8 +10,8 @@ const bcrypt = require('bcrypt');
 const flash = require('express-flash'); 
 const session = require('express-session'); 
 const bodyParser = require('body-parser');
-const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser, findUserByEmail, findUserByNickname, findUserByToken } = require('./db');
-const { insertList, getAllLists, editList, deleteList, addRating, addReview} = require('./listDB'); 
+const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser, findUserByEmail, findUserByNickname, findUserByToken, getAllUsers, updateUserPrivilages } = require('./db');
+const { insertList, getAllLists, editList, deleteList, addRating, addReview, hideComment } = require('./listDB'); 
 require('dotenv').config();
 const crypto = require('crypto');
 const transporter = require('./emailConfig'); // to be used for email configuration. 
@@ -65,6 +65,12 @@ var loggedInUser = {};
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await findUserByEmail(email);
+
+  if(user.disabled){
+    res.json({key: 'disabled'}); 
+    return
+  }
+
   if(user){
     loggedInUser = user; 
     if (await bcrypt.compare(password, user.hashedPassword)) {
@@ -113,6 +119,31 @@ app.post('/changePassword', authenticateJWT, async (req, res) => {
 });
 
 
+// route that sets the administrator privilages. 
+// figure out authenticateJWT
+app.post('/setAdminPrivilage', async (req, res) => {
+  const {user, isAdmin} = req.body; 
+  const update = {
+    $set: { isAdmin: isAdmin },
+  };
+  await updateUserPrivilages(user.nicknameInput, update); 
+  res.json({key: "success"}); 
+})
+
+
+app.post('/setActivation', async (req, res) => {
+  const { user, disabled } = req.body;
+
+  const update = {
+    $set: { disabled: disabled },
+  };
+  await updateUserPrivilages(user.nicknameInput, update);
+  res.json({ key: "success" });
+});
+
+
+
+
 
 
 // used for the email verification token. 
@@ -147,7 +178,6 @@ app.post('/createAccount', async (req, res) => {
         isVerified,
         token,
       });
-      console.log(result); 
     }catch(e){
 
     }
@@ -174,6 +204,20 @@ app.post('/createAccount', async (req, res) => {
 
 // this will need middleware. 
 // lists will contain a name, description, hero collection, visibility flag of public or private (defualt private), lastModified
+
+
+app.post('/getUsers', async (req, res) => {
+  const {adminInput} = req.body; 
+  const searchedUsers = await getAllUsers(adminInput); 
+  try{
+    res.json({key: searchedUsers}); 
+  } catch (e){
+    console.log('failed to return searched Users' + (e)); 
+  }
+
+})
+
+
 
 
 
@@ -207,7 +251,6 @@ app.post('/createList', authenticateJWT, async (req, res) => {
     }
     res.json({key: 'success'});
   }
-
 })
 
 
@@ -234,6 +277,17 @@ app.post('/createList', authenticateJWT, async (req, res) => {
     }
 
   })
+
+
+app.post('/hideComment', async (req, res) => {
+  const {list, comment, isHidden} = req.body; 
+  try{
+    hideComment(list, comment, isHidden); 
+    res.json({key: "success"}); 
+  } catch {
+    res.json({key: "failed to edit list"}); 
+  }
+})
 
 
 

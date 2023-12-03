@@ -7,6 +7,7 @@ function ChangePassword() {
   const [resultMessage, setResultMessage] = useState('');
 
 
+
   	const changePassword = () => {
 		// using getCredentials to get the token of the logged in user. 
 		fetch('/getCredentials')

@@ -23,6 +23,7 @@ async function insertList(list) {
 }
 
 
+// used to edit any property of an existing list. 
 async function editList(newListName, newListDesc, newHeroCollection, newPublicity, createdBy, prevListName) {
     const listsCollection = client.db(dbName).collection('lists');
 
@@ -62,6 +63,7 @@ async function editList(newListName, newListDesc, newHeroCollection, newPublicit
   }
 
 
+// used to add ratings to list
 async function addRating(rating, listName, createdBy){
   const listsCollection = client.db(dbName).collection('lists');
   const foundList = await listsCollection.findOne({ listName: listName, createdBy: createdBy });
@@ -83,12 +85,13 @@ async function addRating(rating, listName, createdBy){
   }
 }
 
+// used to add reviews to lists. 
 async function addReview(comment, listName, createdBy){
   const listsCollection = client.db(dbName).collection('lists');
   const foundList = await listsCollection.findOne({ listName: listName, createdBy: createdBy });
   const updates = {
     $push: {
-      comments: comment
+      comments: {comment, hidden: false} 
     },
   };
 
@@ -121,8 +124,30 @@ async function deleteList(listName, createdBy){
 
 }
 
+async function hideComment(list, comment, isHidden) {
+  const listsCollection = client.db(dbName).collection('lists');
+  const foundList = await listsCollection.findOne({ listName: list.listName, createdBy: list.createdBy });
+  const updates = {
+    $push: {
+      comments: {comment: comment.comment, hidden: isHidden} 
+    },
+  };
+  
+  try {
+    const result = await listsCollection.updateOne({ _id: list._id }, updates);
+    if (result.modifiedCount === 1) {
+      console.log("list updated successfully");
+    } else {
+      console.log("Failed to update the list");
+    }
+  } catch (error) {
+    console.error("Error updating list:", error);
+  }
+
+}
 
 
+// returns the entire collections of lists. 
 async function getAllLists() {
     const listsCollection = client.db(dbName).collection('lists');
     try {
@@ -142,5 +167,6 @@ module.exports = {
   editList, 
   deleteList,
   addRating,
-  addReview
+  addReview, 
+  hideComment
 };

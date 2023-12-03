@@ -15,7 +15,7 @@ goButton.addEventListener('click', function(){
 	else if (password == ''){
 		notification.innerHTML = 'Please enter a password'; 
 	} else {
-		fetch('http://localhost:3000/login', {
+		fetch('/login', {
 			method: 'POST',
 			headers: {
 			'Content-Type': 'application/json',
@@ -30,6 +30,8 @@ goButton.addEventListener('click', function(){
 			  notification.innerHTML = 'Your email or password is incorrect'; 
 			} else if (data.key === 'incorrectCredentials'){
 			  notification.innerHTML = 'Your email or password is incorrect'; 
+			} else if(data.key === 'disabled'){
+				notification.innerHTML = 'Your account has been disabled. Please contact Administrator at fake#gmail.com '
 			} else if (data.key === 'success'){
 				window.location.href = '/index.html';
 			}
@@ -41,7 +43,7 @@ goButton.addEventListener('click', function(){
 
 guest.addEventListener('click', function(){
 	// so that the logged in user variable is reset and a user can't change the password of the last person who logged in. 
-	fetch('http://localhost:3000/logout', {
+	fetch('/logout', {
 		method: 'POST',
 		headers: {
 		'Content-Type': 'application/json',

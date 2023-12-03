@@ -3,7 +3,7 @@ import Header from './components/Header';
 import ChangePassword from './components/ChangePassword'; 
 import HeroSearch from './components/HeroSearch'; 
 import Lists from './components/Lists'; 
-import SiteMaintenance from './SiteMaintenance'; 
+import SiteMaintenance from './components/SiteMaintenance'; 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import './App.css';
@@ -22,6 +22,7 @@ function HomePage() {
     </div>
   );
 }
+
 
 function App() {
 

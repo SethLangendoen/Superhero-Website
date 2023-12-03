@@ -20,6 +20,7 @@ function Lists() {
   const [personalListNotification, setPersonalListNotification] = useState(''); 
   const [prevList, setPrevList] = useState(null);
   const [thisListDisplay, setThisListDisplay] = useState(false);
+  const [sm, setSM] = useState(false); 
 
 
   // to reduce redundancy create one of these for LoggedInUsercredentials that stores the user. 
@@ -37,6 +38,21 @@ function Lists() {
 
    useEffect(() => {
     const fetchData = async () => {
+
+
+      // used to set a flag to see if the logged in user is an administrator. 
+      fetch('/getCredentials')
+      .then(response => response.json())
+      .then(data => {
+        if(data && data.key.isAdmin){
+          setSM(true);  
+        
+        } else {
+          setSM(false)
+        }
+
+        })
+
       // Fetch the lists when the component mounts
       await setDBLists();
       setLoggedInUserLists(); 
@@ -304,34 +320,24 @@ const submitReview = (listName, createdBy, comment, rating) => { // pput the rat
 
 
 
-// const submitComment = (listName, createdBy) => {
-//   fetch('/getCredentials')
-//   .then((response) => response.json())
-//   .then(async (data) => {
-//   await fetch('/addReview', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'Authorization': data.key.token,	
 
-//     },
-//     body: JSON.stringify({
-//       comments: comment,
-//       listName: listName,
-//       createdBy: createdBy
-//     }),
-//   })
-//   .then((response) => response.json())
-//   .then(async () => {
-//     setDBLists();
-//     setLoggedInUserLists(); 
-//   })
-//   if(!data.key.token){ // if it is a guest user. 
-//     setPubliListNotification('Guests users may not leave reviews'); 
-//   }
+  const setHidden = (list, comment, isHidden) => {
 
-//   })
-// }
+    fetch('/hideComment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // 'Authorization': data.key.token,	
+  
+      },
+      body: JSON.stringify({
+        list: list,
+        comment: comment,
+        isHidden: isHidden
+      }),
+  })
+}
+
 
 
 
@@ -359,11 +365,12 @@ const submitReview = (listName, createdBy, comment, rating) => { // pput the rat
   }
 }
 
+
+
   // to display the dropdown of the edit display
   const selectedHeroEdit = () => {
     setEditDisplay(!editDisplay); // this should swap the edit display to on and off. 
   }
-
 
 
 
@@ -454,7 +461,7 @@ const submitReview = (listName, createdBy, comment, rating) => { // pput the rat
                                 <li>Race: {hero.Race}</li>
                                 <li>Hair Color: {hero['Hair color']}</li>
                                 <li>Height: {hero.Height}</li>
-                                <li>Skin Color: {hero['Skin olor']}</li>
+                                <li>Skin Color: {hero['Skin color']}</li>
                                 <li>Alignment: {hero.Alignment}</li>
                                 <li>Weight: {hero.Weight}</li>
                               </ul>
@@ -511,7 +518,7 @@ const submitReview = (listName, createdBy, comment, rating) => { // pput the rat
                                 <li>Race: {hero.Race}</li>
                                 <li>Hair Color: {hero['Hair color']}</li>
                                 <li>Height: {hero.Height}</li>
-                                <li>Skin Color: {hero['Skin olor']}</li>
+                                <li>Skin Color: {hero['Skin color']}</li>
                                 <li>Alignment: {hero.Alignment}</li>
                                 <li>Weight: {hero.Weight}</li>
                               </ul>
@@ -545,13 +552,36 @@ const submitReview = (listName, createdBy, comment, rating) => { // pput the rat
 
                           <ul id="commentsList">
                             {list.comments.map((comment, index) => (
+
+
                               <li key={index}>
-                                <div class="commentHeader">
-                                  <span class="commentDate">{new Date(list.currentDateAndTime).toLocaleDateString()}</span>
+                                {/* If you are an admin you see the hidden option */}
+                              {sm && (
+                                <div>
+                                  <label htmlFor = 'hiddenBox'>hidden</label>
+                                  <input 
+                                  type = "checkbox"
+                                  id = 'hiddenBox'
+                                  defaultChecked = {comment.hidden}
+                                  onChange = {setHidden(list, comment, (e) => e.target.value)}
+                                  />
                                 </div>
 
-                                  <span class="commenterName">{list.createdBy + " says:"}</span>
-                                <div class="commentText">{comment}</div>
+                              )}
+                              {/* If you are not an admin and not the comments not hidden then you don't see anything */}
+                              {!comment.hidden && !sm && ( 
+                                <div>
+                                  <div class="commentHeader">
+                                    <span class="commentDate">{new Date(list.currentDateAndTime).toLocaleDateString()}</span>
+                                  </div>
+
+                                    <span class="commenterName">{list.createdBy + " says:"}</span>
+                                    {/* the comment needs to be marked as hidden and it has to be a non-admin to */}
+                                
+                                  <div class="commentText">{comment.comment}</div> 
+                                </div>
+                              )}
+
                               </li>
                             ))}
                           </ul>

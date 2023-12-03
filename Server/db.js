@@ -49,6 +49,10 @@ async function updateUser(user, update) {
    await usersCollection.updateOne(user, update);
 }
 
+async function updateUserPrivilages(nicknameInput, update) {
+  const usersCollection = client.db(dbName).collection('users');
+  await usersCollection.updateOne({ nicknameInput: nicknameInput }, update);
+}
 
 
 async function findUserByEmail(email) {
@@ -68,10 +72,34 @@ async function findUserByToken(token) {
 
 
 
+async function getAllUsers(input) {
+  const usersCollection = client.db(dbName).collection('users');
+
+  try {
+    const users = await usersCollection.find({}).toArray();
+
+    if (input === '') {
+      return users;
+    } else {
+      const filteredUsers = users.filter((user) =>
+        user.nicknameInput.toLowerCase().includes(input.toLowerCase())
+      );
+      return filteredUsers;
+    }
+  } catch (error) {
+    throw new Error('Failed to fetch users', error);
+  }
+}
+
+
+
+
 async function closeMongoDBConnection() {
   await client.close();
   console.log('Closed MongoDB connection');
 }
+
+
 
 
 module.exports = {
@@ -82,5 +110,7 @@ module.exports = {
 	updateUser,
   findUserByEmail, 
   findUserByNickname,
-  findUserByToken
+  findUserByToken,
+  getAllUsers,
+  updateUserPrivilages
 };
