@@ -24,7 +24,8 @@ function Header() {
         })
       .catch(error => console.error('Error fetching user information:', error));
   }, []);
-  
+
+
 
   const handleLogout = () => {
     fetch('/logout', { method: 'POST' })
@@ -57,6 +58,8 @@ function Header() {
           {sm && (
           <Link to="/site-maintenance">Site Maintenance</Link>
           )}
+          <Link to="/view-policies">View Policices</Link>
+
           <Link to="/change-password">Change Password</Link>
           <button onClick={handleLogout}>Logout</button>
         </div>

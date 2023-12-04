@@ -124,27 +124,47 @@ async function deleteList(listName, createdBy){
 
 }
 
+
 async function hideComment(list, comment, isHidden) {
   const listsCollection = client.db(dbName).collection('lists');
-  const foundList = await listsCollection.findOne({ listName: list.listName, createdBy: list.createdBy });
+
+  // Find the index of the comment in the list
+  const commentIndex = list.comments.findIndex((c) => c.comment === comment.comment);
+
+  console.log('Comment Index:', commentIndex);
+
+  if (commentIndex === -1) {
+    console.error('Comment not found in the list.');
+    return;
+  }
+
   const updates = {
-    $push: {
-      comments: {comment: comment.comment, hidden: isHidden} 
+    $set: {
+      [`comments.${commentIndex}.hidden`]: isHidden,
     },
   };
-  
+
   try {
-    const result = await listsCollection.updateOne({ _id: list._id }, updates);
+    const result = await listsCollection.updateOne(
+      { listName: list.listName, createdBy: list.createdBy },
+      updates
+    );
+
     if (result.modifiedCount === 1) {
-      console.log("list updated successfully");
+      console.log("List updated successfully");
     } else {
       console.log("Failed to update the list");
     }
   } catch (error) {
     console.error("Error updating list:", error);
   }
-
 }
+
+
+
+
+
+
 
 
 // returns the entire collections of lists. 

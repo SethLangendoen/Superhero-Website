@@ -8,9 +8,18 @@ function SiteMaintenance() {
 	const [usersDeactivate, setDeactivateUsers] = useState([]);
 	const [deactivateInput, setDeactivateInput] = useState('');
 
+	const [create, setCreate] = useState(false); 
+	const [policyName, setPolicyName] = useState(''); 
+	const [policyText, setPolicyText] = useState(''); 
+	const [policies, setPolicies] = useState([]); 
+	const [viewPolicy, setViewPolicy] = useState(null); 
+	const [editPolicyName, setEditPolicyName] = useState(''); 
+	const [editPolicyText, setEditPolicyText] = useState(''); 
+
 
 
 useEffect(() => {
+	displayPolicies(); 
 	fetch('/getCredentials')
 	.then(response => response.json())
 	.then(data => {
@@ -84,7 +93,9 @@ useEffect(() => {
   }, [deactivateInput]);
 
 
-
+  const handlePolicy = (index) => {
+    setViewPolicy(index); 
+  };
 
 
 
@@ -137,15 +148,102 @@ const setActivation = (user, isChecked) => {
 
 
 
+  const createPolicy = async () => {
+	try {
+	  const response = await fetch('/insertPolicy', {
+		method: 'POST',
+		headers: {
+		  'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+		  policyName: policyName,
+		  policyText: policyText,
+		}),
+	  });
+  
+	  if (!response.ok) {
+		throw new Error('Network response was not ok');
+	  }
+  
+	  const data = await response.json();
+	  displayPolicies();
+	  // Optionally, you can use the data received from the server
+	  console.log('Policy created successfully:', data);
+	} catch (error) {
+	  console.error('Error creating policy:', error);
+	  // Handle the error appropriately, e.g., set an error state
+	}
+  };
+  
+
+
+  const displayPolicies = async () => {
+	try {
+	  const response = await fetch('/displayPolicies', {
+		method: 'POST',
+		headers: {
+		  'Content-Type': 'application/json',
+		},
+	  });
+  
+	  // Check if the response status is ok before proceeding
+	  if (!response.ok) {
+		throw new Error('Network response was not ok');
+	  }
+  
+	  const data = await response.json();
+	  setPolicies(data.key);
+	  console.log(data.key); 
+	} catch (error) {
+	  console.error('Error fetching policies:', error);
+	}
+  };
+  
+
+  const editPolicies = async (prevPolicy) => {
+
+	try {
+		const response = await fetch('/editPolicy', {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify({
+			policyName: editPolicyName,
+			policyText: editPolicyText,
+			prevPolicyName: prevPolicy.policyName
+		  }),
+		});
+	
+		if (!response.ok) {
+		  throw new Error('Network response was not ok');
+		}
+	
+		const data = await response.json();
+		displayPolicies();
+		// Optionally, you can use the data received from the server
+		console.log('Policy created successfully:', data);
+	  } catch (error) {
+		console.error('Error creating policy:', error);
+		// Handle the error appropriately, e.g., set an error state
+	  }
+
+	 
+	
+	displayPolicies();
+  }
+
+
+
+
   return (
     <div>
 
 
 	{adminUser && (
 
-	<div>
-
-		<div id="grantAdminPrivilage">
+	<div id = "entirePolicyPage">
+		<div id="grantAdminPrivilage" className = 'innerDiv'>
 			<h3>Grant Administrator Privilage</h3>
 			<input
 			placeholder='search user'
@@ -155,7 +253,7 @@ const setActivation = (user, isChecked) => {
 			}}
 			/>
 
-			<div>
+			<div classFor = 'innerDiv'>
 			{users.length > 0 && (
 				<table>
 				{users.map((user) => (
@@ -177,9 +275,10 @@ const setActivation = (user, isChecked) => {
 
 
 
+		<div id="deactivateUser" className = 'innerDiv'>
 
-		<h3>Deactivate User</h3>
-		<input
+			<h3>Deactivate User</h3>
+			<input
 			placeholder='search user'
 			classFor='searchUser'
 			onChange={(e) => {
@@ -187,7 +286,7 @@ const setActivation = (user, isChecked) => {
 			}}
 			/>
 
-			<div id="deactivateUser">
+			<div>
 				{usersDeactivate.length > 0 && (
 					<table>
 					{usersDeactivate.map((user) => (
@@ -204,12 +303,67 @@ const setActivation = (user, isChecked) => {
 					</table>
 				)}
 			</div>
+		</div>
+
+		<div className = 'innerDiv'>
+		<div id='createPolicies'>
+			<button onClick={() => setCreate(!create)}>Create Policy</button>
+			{create && (
+				<div id = "createPol">
+				<input 
+				tpe = "text"
+				placeholder='Policy Name' 
+				onChange = {(e) => setPolicyName(e.target.value)}
+				/>
+				<textarea 
+				type = 'textarea'
+				className = 'policyDesc'
+				placeholder='Enter the policy information here' 
+				onChange = {(e) => setPolicyText(e.target.value)}
+				/>
+
+				<button onClick = {() => createPolicy()}>Save Policy</button>
+
+				</div>
+			)}
+		</div>
+
+
+
+		<div id='displayPolicies' className = 'innerDiv'>
+			{policies &&
+				policies.map((policy, index) => (
+				<div key={index}>
+					<button id = 'editPolicy' onClick = {() => handlePolicy(index)}>Edit Policy</button>
+					{viewPolicy === index && (
+						<div id = "editPol">
+							<input
+							placeholder='Enter policy name here'
+							onChange = {(e) => setEditPolicyName(e.target.value)}
+							/>
+							<textarea 
+							className = 'policyDesc'
+							placeholder='Enter policy text here'
+							onChange = {(e) => setEditPolicyText(e.target.value)}
+							/>
+							<button onClick = {() => editPolicies(policy)}>Save Policy</button>
+						</div>
+					)}
+					<p>{policy.policyName}</p>
+					<p>{policy.policyText}</p>
+					
+				</div>
+			))}
+		</div>
+		</div>
+
 
 
 		</div>
 	)}
 	{!adminUser && (
 		<p>Only administrators can access this page. </p>
+
 	)}
 
     </div>

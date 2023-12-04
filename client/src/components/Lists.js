@@ -22,7 +22,6 @@ function Lists() {
   const [thisListDisplay, setThisListDisplay] = useState(false);
   const [sm, setSM] = useState(false); 
 
-
   // to reduce redundancy create one of these for LoggedInUsercredentials that stores the user. 
   // that way we only have to call get Credentials once. 
 
@@ -101,7 +100,6 @@ function Lists() {
       .then(async (data) => {
         await setDBLists();
         setLoggedInUserLists(); 
-
       })
 
   };
@@ -269,28 +267,30 @@ const handleCommentChange = (value) => {
 };
  
 // reconstructing this to be one big review. 
-const submitReview = (listName, createdBy, comment, rating) => { // pput the rating and comment into here, then set them using setters here. 
+const submitReview = async (listName, createdBy, comment, rating) => { // pput the rating and comment into here, then set them using setters here. 
+
+
   fetch('/getCredentials')
   .then((response) => response.json())
   .then(async (data) => {
-  console.log(rating); 
-  console.log(comment);
-  if ((10 >= rating >= 1) && (rating != null)){
-    setRating(null); 
-    fetch('/addRating', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': data.key.token,	
-      },
-      body: JSON.stringify({
-        rating: rating,
-        listName: listName,
-        createdBy: createdBy
-      }),
-    })
-  }
-  if(comment != ''){
+    console.log(rating); 
+    console.log(comment);
+    if ((10 >= rating >= 1) && (rating)){
+      setRating(null); 
+      fetch('/addRating', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': data.key.token,	
+        },
+        body: JSON.stringify({
+          rating: rating,
+          listName: listName,
+          createdBy: createdBy
+        }),
+      })
+    }
+   if(comment != ''){
     fetch('/addReview', {
       method: 'POST',
       headers: {
@@ -303,39 +303,80 @@ const submitReview = (listName, createdBy, comment, rating) => { // pput the rat
         createdBy: createdBy
       }),
     })
-    .then((response) => response.json())
-    .then(async (data) => {
-      // await setDBLists();
-      // setLoggedInUserLists(); 
-    }) 
-  }
+    }
+    if(!data.key.token){ // if it is a guest user. 
+      setPubliListNotification('Guests users may not leave reviews'); 
+    }
+  })
+  .then(async () => {
+    resetList();
+  })
 
-  if(!data.key.token){ // if it is a guest user. 
-    setPubliListNotification('Guests users may not leave reviews'); 
-  }
-  setDBLists();
-  setLoggedInUserLists(); 
-})
 }
 
 
 
+// This is used to solve list resetting. 
+const resetList = () => {
+  fetch('/getCredentials')
+    .then((response) => response.json())
+    .then((data) => {
+    })
+    .then(async (data) => {
+      await setDBLists();
+      setLoggedInUserLists(); 
+    })
 
-  const setHidden = (list, comment, isHidden) => {
+};
 
-    fetch('/hideComment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // 'Authorization': data.key.token,	
-  
-      },
-      body: JSON.stringify({
-        list: list,
-        comment: comment,
-        isHidden: isHidden
-      }),
-  })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const setHidden = (list, comment, isHidden) => {
+  console.log('setHidden called!')
+  console.log(isHidden)
+
+  fetch('/hideComment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // 'Authorization': data.key.token,	
+
+    },
+    body: JSON.stringify({
+      list: list,
+      comment: comment,
+      isHidden: isHidden
+    }),
+})
 }
 
 
@@ -494,9 +535,9 @@ const submitReview = (listName, createdBy, comment, rating) => { // pput the rat
             <ul>
               {lists.map((list) => (
                 <li>
-                  <strong key={list._id} onClick={() => showListDetails(list)}>
-                    {list.listName} - Created By: {list.createdBy || 'Guest'} Contains {list.heroCollection.trim() ? list.heroCollection.split(',').length : 0} heroes - Rating: {getAverageRating(list)} 
-                  </strong>        
+                <strong key={list._id} onClick={() => showListDetails(list)}>
+                  {list.listName} - Created By: {list.createdBy || 'Guest'} Contains {list.heroCollection.trim() ? list.heroCollection.split(',').length : 0} heroes - Rating: {getAverageRating(list)} 
+                </strong>      
                     
                   {thisListDisplay && (
                   <div>      
@@ -553,7 +594,6 @@ const submitReview = (listName, createdBy, comment, rating) => { // pput the rat
                           <ul id="commentsList">
                             {list.comments.map((comment, index) => (
 
-
                               <li key={index}>
                                 {/* If you are an admin you see the hidden option */}
                               {sm && (
@@ -563,13 +603,13 @@ const submitReview = (listName, createdBy, comment, rating) => { // pput the rat
                                   type = "checkbox"
                                   id = 'hiddenBox'
                                   defaultChecked = {comment.hidden}
-                                  onChange = {setHidden(list, comment, (e) => e.target.value)}
+                                  onChange = {(e) => setHidden(list, comment, (e.target.checked))}
                                   />
                                 </div>
 
                               )}
-                              {/* If you are not an admin and not the comments not hidden then you don't see anything */}
-                              {!comment.hidden && !sm && ( 
+                              {/* If the comment is hidden you don't see it unless you are an administrator */}
+                              {(!comment.hidden || sm) && ( 
                                 <div>
                                   <div class="commentHeader">
                                     <span class="commentDate">{new Date(list.currentDateAndTime).toLocaleDateString()}</span>

@@ -4,6 +4,7 @@ import ChangePassword from './components/ChangePassword';
 import HeroSearch from './components/HeroSearch'; 
 import Lists from './components/Lists'; 
 import SiteMaintenance from './components/SiteMaintenance'; 
+import Policies from './components/Policies'; 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import './App.css';
@@ -24,6 +25,7 @@ function HomePage() {
 }
 
 
+
 function App() {
 
   return (
@@ -31,14 +33,10 @@ function App() {
     <Router>
         <Header />
 
-      
-        <Routes>
-        
+        <Routes> 
         <Route path = '/index.html' element = {<HomePage />}></Route>
-
-        
         <Route path = '/site-maintenance' element = {<SiteMaintenance />}></Route>
-
+        <Route path = '/view-policies' element = {<Policies />}></Route>
         <Route path = '/change-password' element = {<ChangePassword />}></Route>
 
         </Routes>

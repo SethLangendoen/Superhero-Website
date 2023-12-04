@@ -8,6 +8,7 @@ body {
 }
 
 
+
 .home-page-container {
   display: flex;
   justify-content: space-between;
@@ -493,4 +494,37 @@ body {
 
 .commenterName {
   color: red
+}
+
+
+#entirePolicyPage{
+  display: flex; 
+  flex-direction: row; 
+  justify-content: center;
+}
+
+.innerDiv{
+  margin: 20px; 
+}
+
+.policyDesc{
+  width: 300px; 
+  height: 200px; 
+  text-align: center; 
+}
+
+#editPol{
+  display: flex; 
+  flex-direction: column; 
+  text-align: center;
+}
+
+#createPol{
+  display: flex; 
+  flex-direction: column; 
+  text-align: center;
+}
+
+#displayPolicies{
+  margin: 20px; 
 }

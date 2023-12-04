@@ -12,6 +12,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const { connectToMongoDB, closeMongoDBConnection, insertUser, updateUser, findUserByEmail, findUserByNickname, findUserByToken, getAllUsers, updateUserPrivilages } = require('./db');
 const { insertList, getAllLists, editList, deleteList, addRating, addReview, hideComment } = require('./listDB'); 
+const { insertPolicy, editPolicy, getPolicies} = require('./policiesDB'); 
 require('dotenv').config();
 const crypto = require('crypto');
 const transporter = require('./emailConfig'); // to be used for email configuration. 
@@ -30,6 +31,7 @@ connectToMongoDB(); // connects us to the mongodb when the server starts.
 
 const jwt = require('jsonwebtoken');
 const { parentPort } = require('worker_threads');
+const { application } = require('express');
 app.use(express.json());
 
 
@@ -71,6 +73,7 @@ app.post('/login', async (req, res) => {
     return
   }
 
+  
   if(user){
     loggedInUser = user; 
     if (await bcrypt.compare(password, user.hashedPassword)) {
@@ -279,8 +282,49 @@ app.post('/createList', authenticateJWT, async (req, res) => {
   })
 
 
+app.post('/displayPolicies', async (req,res) => {
+
+  try{
+    const policies = await getPolicies(); 
+    console.log('These are the policies: ' + policies); 
+    res.json({key: policies}); 
+  } catch {
+    res.json({key: "failed to edit list"}); 
+  }
+
+})
+
+
+
+app.post('/insertPolicy', async (req,res) => {
+  const {policyName, policyText} = req.body; 
+  try{
+    await insertPolicy(policyName, policyText); 
+    res.json({key: "success"}); 
+    console.log('Inserted Policy!'); 
+  } catch {
+    res.json({key: "failed to insert policy "}); 
+  }
+})
+
+
+
+app.post('/editPolicy', async (req,res) => {
+  const {policyName, policyText, prevPolicyName} = req.body; 
+  try{
+    editPolicy(policyName, policyText, prevPolicyName); 
+    res.json({key: "success"}); 
+  } catch {
+    res.json({key: "failed to edit list"}); 
+  }
+})
+
+
+
+
 app.post('/hideComment', async (req, res) => {
   const {list, comment, isHidden} = req.body; 
+  console.log('/hideComment' + isHidden); 
   try{
     hideComment(list, comment, isHidden); 
     res.json({key: "success"}); 
@@ -412,7 +456,9 @@ app.get('/verify/:token', async (req, res) => {
 
 
 
-
+const listData = JSON.parse(
+  fs.readFileSync('lists.json', 'utf8') // reads the contents of the file and then parses it into a js object
+);
 
 // read the powers json file
 const superheroPowerData = JSON.parse(
@@ -424,25 +470,34 @@ const superheroInfoData = JSON.parse(
   fs.readFileSync('superhero_info.json', 'utf8') // reads the contents of the file and then parses it into a js object
 );
 
+// lisData
+
+
 
 
 // route for searching heroes, and including the heroes that only match all filters given in name, race publisher and power
-app.post('/heroSearch', (req, res) => {
-const {name, race, publisher, power} = req.body; 
 
-  const foundHeroesByName = superheroInfoData.filter((hero) => hero.name.toLowerCase().includes(name.toLowerCase())); 
-  const foundHeroesByRace = superheroInfoData.filter((hero) => hero.Race.toLowerCase().includes(race.toLowerCase())); 
-  const foundHeroesByPublisher = superheroInfoData.filter((hero) => hero.Publisher.toLowerCase().includes(publisher.toLowerCase())); 
-  const powers = superheroPowerData.filter((powers) => (powers[power] === "True")); 
+app.post('/heroSearch', (req, res) => {
+  const { name, race, publisher, power } = req.body;
+
+  const foundHeroesByName = superheroInfoData.filter((hero) => {
+    const similarity = stringSimilarity.compareTwoStrings(hero.name.toLowerCase(), name.toLowerCase());
+    return similarity > 0.7; // You can adjust the similarity threshold as needed
+  });
+
+  const foundHeroesByRace = superheroInfoData.filter((hero) => hero.Race.toLowerCase().includes(race.toLowerCase()));
+  const foundHeroesByPublisher = superheroInfoData.filter((hero) => hero.Publisher.toLowerCase().includes(publisher.toLowerCase()));
+  const powers = superheroPowerData.filter((powers) => powers[power] === "True");
+
 
   const heroNamesByPower = new Set();
   for (const powerItem of powers) {
     const heroesWithPower = superheroInfoData.filter((hero) => hero.name === powerItem.hero_names);
     heroesWithPower.forEach((hero) => heroNamesByPower.add(hero));
   }
-
   const foundHeroesByPower = Array.from(heroNamesByPower);
 
+  
   const nonNullLists = [foundHeroesByName, foundHeroesByRace, foundHeroesByPublisher, foundHeroesByPower];
   const filteredLists = nonNullLists.filter((list) => list && list.length > 0);
   if (filteredLists.length === 0) {
@@ -454,9 +509,14 @@ const {name, race, publisher, power} = req.body;
     return filteredLists.every((list) => list.includes(hero));
   });
 
-  res.json(resultHeroes)
+  res.json(resultHeroes);
+});
 
-})
+
+
+
+
+
 
 
 // this function needs to take a list of names and return a list of the corresponding heroes. 
@@ -628,9 +688,7 @@ function getUniquePublishers(data) {
 
 
 // Read the superhero_info.json file
-const listData = JSON.parse(
-  fs.readFileSync('lists.json', 'utf8') // reads the contents of the file and then parses it into a js object
-);
+
 
 // Create a new list with a given name
 app.post('/api/open/create_list/:listname', (req, res) => {
