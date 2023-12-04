@@ -3,3 +3,7 @@ Server/superhero_powers.json
 Server/lists.json
 
 node_modules
+
+Server/request.rest
+
+package-lock.json
