@@ -7,21 +7,30 @@ function isValidEmail(email) {
 	return emailRegex.test(email);
   }
 
+
+
 createAccountButton.addEventListener('click', function(){
   const nicknameInput = document.getElementById('nickname').value;
   const emailInput = document.getElementById('email').value;
   const passwordInput = document.getElementById('password').value;
 
 
+  
   if(nicknameInput == ''){
     noti.innerHTML = 'Please enter a nickname'; 
+  } else if(nicknameInput.length > 30) {
+	noti.innerHTML = 'Nickname must be less than 30 characters'; 
   } else if (emailInput == ''){
 		noti.innerHTML = 'Please enter an email'; 
   } else if (!isValidEmail(emailInput)) {
 	noti.innerHTML = 'Please enter a valid email';
   } else if (passwordInput == ''){
 		noti.innerHTML = 'Please enter a password'; 
-  } else {
+  }  else if (passwordInput.length > 30) {
+		noti.innerHTML = 'Password must be less than 30 characters';
+  }
+  
+  else {
 
 		fetch('http://localhost:8080/createAccount', {
 			method: 'POST',
