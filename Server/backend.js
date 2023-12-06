@@ -191,7 +191,7 @@ app.post('/createAccount', async (req, res) => {
       from: process.env.EMAIL_USER,
       to: emailInput,
       subject: 'Email Verification',
-      text: `Click the following link to verify your email: http://ec2-52-90-18-10.compute-1.amazonaws.com:6000/verify/${token}`,
+      text: `Click the following link to verify your email: http://ec2-3-81-151-234.compute-1.amazonaws.com:6000/verify/${token}`,
     }
     await transporter.sendMail(mailOptions);
 
