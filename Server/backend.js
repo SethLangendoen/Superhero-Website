@@ -191,7 +191,7 @@ app.post('/createAccount', async (req, res) => {
       from: process.env.EMAIL_USER,
       to: emailInput,
       subject: 'Email Verification',
-      text: `Click the following link to verify your email: http://ec2-54-145-108-105.compute-1.amazonaws.com:8080/verify/${token}`,
+      text: `Click the following link to verify your email: http://ec2-52-90-18-10.compute-1.amazonaws.com:8080/verify/${token}`,
     }
     await transporter.sendMail(mailOptions);
 
@@ -650,12 +650,12 @@ app.use((req, res, next) => {
 
 
 
-// // Serve static files (HTML, CSS, JavaScript) from the "Client" directory.
-// app.use('/', express.static(path.join(__dirname, '../Client'))); 
-// // to Serve the index.html file. 
-// app.get('/', (req, res) => {
-//   res.sendFile(path.resolve(__dirname, '../Client/index.html'));
-// });
+// Serve static files (HTML, CSS, JavaScript) from the "Client" directory.
+app.use('/', express.static(path.join(__dirname, '../Client'))); 
+// to Serve the index.html file. 
+app.get('/', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../Client/index.html'));
+});
 
 
 
