@@ -456,18 +456,18 @@ app.get('/verify/:token', async (req, res) => {
 
 
 
-const listData = JSON.parse(
-  fs.readFileSync('lists.json', 'utf8') // reads the contents of the file and then parses it into a js object
-);
+// const listData = JSON.parse(
+//   fs.readFileSync('./lists.json', 'utf8') // reads the contents of the file and then parses it into a js object
+// );
 
 // read the powers json file
 const superheroPowerData = JSON.parse(
-  fs.readFileSync('superhero_powers.json', 'utf8') // reads the powers jsonfile and parses it into a js object. 
+  fs.readFileSync(path.join(__dirname, 'superhero_powers.json'), 'utf8')
 ); 
 
 // Read the superhero_info.json file
 const superheroInfoData = JSON.parse(
-  fs.readFileSync('superhero_info.json', 'utf8') // reads the contents of the file and then parses it into a js object
+  fs.readFileSync(path.join(__dirname, 'superhero_info.json'), 'utf8') // reads the contents of the file and then parses it into a js object
 );
 
 // lisData
