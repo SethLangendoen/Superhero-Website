@@ -20,7 +20,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start-api": "node ../Server/backend.js",
-    "start-react": "react-scripts start --port 3000"
+    "start-react": "npm start"
   },
   "eslintConfig": {
     "extends": [

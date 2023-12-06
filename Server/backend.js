@@ -650,12 +650,12 @@ app.use((req, res, next) => {
 
 
 
-// Serve static files (HTML, CSS, JavaScript) from the "Client" directory.
-app.use('/', express.static(path.join(__dirname, '../Client'))); 
-// to Serve the index.html file. 
-app.get('/', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../Client/index.html'));
-});
+// // Serve static files (HTML, CSS, JavaScript) from the "Client" directory.
+// app.use('/', express.static(path.join(__dirname, '../Client'))); 
+// // to Serve the index.html file. 
+// app.get('/', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, '../Client/index.html'));
+// });
 
 
 
