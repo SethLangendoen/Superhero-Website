@@ -2,7 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://ec2-52-90-18-10.compute-1.amazonaws.com:8080/",
+  "proxy": "http://ec2-52-90-18-10.compute-1.amazonaws.com:6000/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",

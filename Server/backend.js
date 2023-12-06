@@ -191,7 +191,7 @@ app.post('/createAccount', async (req, res) => {
       from: process.env.EMAIL_USER,
       to: emailInput,
       subject: 'Email Verification',
-      text: `Click the following link to verify your email: http://ec2-52-90-18-10.compute-1.amazonaws.com:8080/verify/${token}`,
+      text: `Click the following link to verify your email: http://ec2-52-90-18-10.compute-1.amazonaws.com:6000/verify/${token}`,
     }
     await transporter.sendMail(mailOptions);
 
@@ -661,7 +661,7 @@ app.get('/', (req, res) => {
 
 
 // Start the server
-const PORT = 8080;
+const PORT = 6000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
