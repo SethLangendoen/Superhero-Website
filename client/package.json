@@ -23,8 +23,7 @@
     "start-react": "npm-run-all --parallel start-webpack start-react-scripts",
     "start-webpack": "webpack serve --mode development --open",
     "start-react-scripts": "react-scripts start --host 0.0.0.0 --port 3000"
-  }
-  
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
